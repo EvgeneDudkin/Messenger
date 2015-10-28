@@ -52,6 +52,10 @@ public class AuthorizationActivity extends Activity implements LoaderCallbacks<C
     private View mProgressView;
     private View mLoginFormView;
 
+    public void AuthBtn_onClick(View view) {
+        msgOkBox.MsgOkBox("Title", "msg", this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

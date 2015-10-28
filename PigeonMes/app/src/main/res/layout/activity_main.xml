@@ -16,7 +16,8 @@
         android:layout_marginBottom="59dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:width="300dp" />
+        android:width="300dp"
+        android:onClick="onRegClick"/>
 
     <Button
         android:layout_width="wrap_content"
