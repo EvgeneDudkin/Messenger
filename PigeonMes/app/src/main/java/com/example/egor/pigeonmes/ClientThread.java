@@ -15,13 +15,11 @@ import java.net.UnknownHostException;
 /**
  * Created by Kirill2 on 28.10.2015.
  */
-public class ClientThread implements Runnable {
+/*public class ClientThread implements Runnable {
     public ClientThread(String s) {
         msg = s;
     }
     private String msg = null;
-    private static String IP = "192.168.0.101";
-    private static int port = 3000;
     public String ret = null;
     DataOutputStream dataOutputStream = null;
     DataInputStream dataInputStream = null;
@@ -67,4 +65,4 @@ public class ClientThread implements Runnable {
     }
 
 
-}
+}*/
