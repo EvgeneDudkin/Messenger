@@ -52,6 +52,10 @@ public class AuthorizationActivity extends Activity implements LoaderCallbacks<C
     private View mProgressView;
     private View mLoginFormView;
 
+    public void AuthBtn_onClick(View view) {
+        msgOkBox.MsgOkBox("Title", "msg", this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,26 +123,25 @@ public class AuthorizationActivity extends Activity implements LoaderCallbacks<C
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        //boolean cancel = false;
-        boolean cancel = true;
+        boolean cancel = false;
         View focusView = null;
 
-        //1) Valid login
-        if (isEmailValid(email)) {
-            // 2) Valid password
-            if (isPasswordValid(password)) {
-                cancel = false;
-            }
-            // 3) Invalid password, valid email
-            else {
-                mPasswordView.setError(getString(R.string.error_invalid_password));
-                focusView = mPasswordView;
-            }
+        // Check for a valid password, if the user entered one.
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
+            cancel = true;
         }
-        // 4) Invalid email
-        else {
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
+            cancel = true;
         }
 
         if (cancel) {

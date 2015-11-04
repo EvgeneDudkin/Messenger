@@ -6,8 +6,8 @@
     <string name="action_sign_in">Авторизация</string>
     <string name="action_sign_in_short">Авторизация</string>
 
-    <string name="error_invalid_email">Логин не соответствует требованиям</string>
-    <string name="error_invalid_password">Пароль должен быть больше 4 символов</string>
+    <string name="error_invalid_email">Этот логин уже используется</string>
+    <string name="error_invalid_password">Пароль слишком короткий</string>
     <string name="error_incorrect_password">Неправильный пароль</string>
     <string name="error_field_required">Это поле необходимо</string>
 </resources>
