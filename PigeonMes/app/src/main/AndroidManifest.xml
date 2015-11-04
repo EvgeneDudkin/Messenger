@@ -30,6 +30,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.egor.pigeonmes.MainActivity" />
         </activity>
+        <activity
+            android:name=".authActivity"
+            android:label="Авторизация"
+            android:parentActivityName=".MainActivity" >
+        </activity>
+        <activity android:name=".emptyActivity" >
+        </activity>
+        <activity android:name=".regActivity" >
+        </activity>
     </application>
 
 </manifest>

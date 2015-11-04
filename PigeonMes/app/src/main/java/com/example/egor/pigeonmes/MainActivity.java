@@ -14,7 +14,16 @@ public class MainActivity extends Activity {
 
         // doStuff
         Intent intentApp = new Intent(MainActivity.this,
-                AuthorizationActivity.class);
+                authActivity.class);
+
+        MainActivity.this.startActivity(intentApp);
+
+
+    }public void onRegClick(View v) {
+
+        // doStuff
+        Intent intentApp = new Intent(MainActivity.this,
+                regActivity.class);
 
         MainActivity.this.startActivity(intentApp);
 
