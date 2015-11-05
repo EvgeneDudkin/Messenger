@@ -20,6 +20,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class regActivity extends Activity {
     MyTask mt;
@@ -28,6 +30,8 @@ public class regActivity extends Activity {
     EditText passText = null;
     EditText pass2Text = null;
     View fucusView = null;
+    LoginPasswordValidator loginPasswordValidator;
+
 
     public void RegBtn_onClick(View view) throws InterruptedException {
         loginText.setError(null);
@@ -36,7 +40,7 @@ public class regActivity extends Activity {
         JSONObject query = new JSONObject();
         JSONObject reg = new JSONObject();
         loginText.setText(loginText.getText().toString().trim());
-        if(!checkLogin() || !checkPass()) {
+        if (!checkLogin() || !checkPass()) {
             fucusView.requestFocus();
             return;
         }
@@ -56,37 +60,47 @@ public class regActivity extends Activity {
     private boolean checkPass() {
         String s = passText.getText().toString().trim();
         String s2 = pass2Text.getText().toString().trim();
-        if(s.length() < 5) {
-            passText.setError("Пароль должен быть длинее 4 символов");
-            fucusView = passText;
-            return false;
+        loginPasswordValidator = new LoginPasswordValidator();
+        if (loginPasswordValidator.validatePassword(s)) {
+            if (!Objects.equals(s, s2)) {
+                pass2Text.setError("Пароли не совпадают");
+                fucusView = pass2Text;
+                return false;
+            }
+            //TODO: Сделать проверку на корректность пароля(A-Za-z0-9)
+            //Done!
+        } else {
+            if (s.length() < 5) {
+                passText.setError("Пароль должен быть длинее 4 символов");
+                fucusView = passText;
+                return false;
+            } else {
+                passText.setError("Пароль может состоять только из букв английского алфавита и цифр, а также должен быть длинее 4 символов");
+                fucusView = passText;
+                return false;
+            }
         }
-        if(!Objects.equals(s,s2)) {
-            pass2Text.setError("Пароли не совпадают");
-            fucusView = pass2Text;
-            return false;
-        }
-        //TODO: Сделать проверку на корректность пароля(A-Za-z0-9)
         return true;
     }
 
     private boolean checkLogin() {
         String s = loginText.getText().toString().trim();
-        if(s.equalsIgnoreCase("")){
-            loginText.setError("Поле не может быть пустым");
-            fucusView = loginText;
-            return false;
+        loginPasswordValidator= new LoginPasswordValidator();
+        if(!loginPasswordValidator.validateLogin(s)) {
+            if (s.length() < 5) {
+                loginText.setError("Логин должен быть не меньше 4 символов");
+                fucusView = loginText;
+                return false;
+            }
+            else{
+                loginText.setError("Логин может состоять только из букв русского, английского алфавита и цифр");
+                fucusView = loginText;
+                return false;
+            }
+            //TODO: Сделать проверку на корректность login'a (A-Za-zА-Яа-я0-9)
+            //Done!
         }
-        else if(s.length() < 5) {
-            loginText.setError("Логин должен быть не меньше 4 символов");
-            fucusView = loginText;
-            return false;
-        }
-        //TODO: Сделать проверку на корректность login'a (A-Za-zА-Яа-я0-9)
-
         return true;
-
-
     }
 
     @Override
@@ -101,11 +115,12 @@ public class regActivity extends Activity {
         passText.setError(null);
         pass2Text.setError(null);
     }
+
     public class MyTask extends AsyncTask<String, Void, String> {
         private Socket socket = null;
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             super.onPreExecute();
             prBar.setVisibility(View.VISIBLE);
         }
@@ -113,8 +128,9 @@ public class regActivity extends Activity {
         @Override
         protected void onPostExecute(final String ret) {
             switch (ret) {
-                case "OK": Intent intentApp = new Intent(regActivity.this,
-                        emptyActivity.class);
+                case "OK":
+                    Intent intentApp = new Intent(regActivity.this,
+                            emptyActivity.class);
                     regActivity.this.startActivity(intentApp);
                     break;
                 case "Error 1":
@@ -180,7 +196,7 @@ public class regActivity extends Activity {
                 //TODO: Пошаманить тут
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 byte buffer[] = new byte[1024];
-                int s=dis.read(buffer);
+                int s = dis.read(buffer);
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
@@ -188,7 +204,7 @@ public class regActivity extends Activity {
             } catch (EOFException e) {
                 e.printStackTrace();
                 return "Error 11";
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return "Error 10";
             }
@@ -197,4 +213,47 @@ public class regActivity extends Activity {
 
 
     }
+}
+
+class LoginPasswordValidator {
+
+    private Pattern symbolsPatternPassword, symbolsPatternLogin;
+    private Matcher matcher;
+
+    /**
+     * ^(            # Начало группы
+     * [A-Za-zА-Яа-я0-9] #Латинские буквы, кириллица, цифры
+     * )$            # Конец группы
+     */
+    private static final String SYMBOLS_PATTERN_LOGIN = "^([A-Za-zА-Яа-я0-9]{5,14})$";
+    private static final String SYMBOLS_PATTERN_PASSWORD = "^([a-zA-Z0-9]{5,14})$";
+
+
+    public LoginPasswordValidator() {
+        symbolsPatternPassword = Pattern.compile(SYMBOLS_PATTERN_PASSWORD);
+        symbolsPatternLogin = Pattern.compile(SYMBOLS_PATTERN_LOGIN);
+    }
+
+    /**
+     * Проверка пароля на существование в нем определенных символов.
+     *
+     * @param password пароль для валидации
+     * @return true если пароль валидный, false - пароль не валидный
+     */
+    public boolean validatePassword(final String password) {
+        matcher = symbolsPatternPassword.matcher(password);
+        return matcher.matches();
+    }
+
+    /**
+     * Проверка логина на существование в нем определенных символов.
+     *
+     * @param login пароль для валидации
+     * @return true если пароль валидный, false - пароль не валидный
+     */
+    public boolean validateLogin(final String login) {
+        matcher = symbolsPatternLogin.matcher(login);
+        return matcher.matches();
+    }
+
 }
