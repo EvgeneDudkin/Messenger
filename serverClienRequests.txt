@@ -54,7 +54,7 @@
 	Client->Server:
 		JSON:
 			{
-			friends: 
+			friendsL: 
 				{
 					token: "%token%"
 				}
@@ -69,7 +69,8 @@
 			}
 			
 		%response% - ответ сервера. "Error N" or "OK"
-			"Error N" - ошибка N => %token% = ""
+			"Error N" - ошибка N => %friends% = []
 			"OK" - ошибки нет
-		%friendsList% - список друзей 
+		%friendsList% - список друзей вида {login: %login%, id: %id%}
+		
 			
