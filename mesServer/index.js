@@ -9,12 +9,12 @@ var dataH = eventHandlers.dataH;
 var HOST = '192.168.0.101';
 var PORT = 3000;
 
-mconnection.query('SELECT COUNT(*) from users where login="' + 'qwerty"', function(err, rows, fields) {
+/*mconnection.query('insert into users (login, pass) values ("13232", "123")', function(err, rows, fields) {
     if (!err)
-        console.log('The solution is: ', rows[0]['COUNT(*)']);
+        console.log('The solution is: ', rows[0]);
     else
         console.log('Error while performing Query.');
-});
+});*/
 
 
 //Создаем экземпляр сервера
