@@ -1,4 +1,4 @@
-/**
+	/**
  * Created by Kirill2 on 27.10.2015.
  */
 var md5 = require('md5');
@@ -26,6 +26,7 @@ function dataHandler(data,sock, conect) {
             if (!err) {
                 if (rows[0]['COUNT(*)'] === 1) {
                     sock.write("OK");
+					sock.destroy();
                 }
                 else {
                     sock.write("Error 3");
@@ -59,6 +60,7 @@ function dataHandler(data,sock, conect) {
                         //Нет ошибки то все ок
                         if(!err) {
                             sock.write("OK");
+							sock.destroy();
                         }
                         //Есть ошибка - ошибка
                         else {
@@ -82,6 +84,26 @@ function dataHandler(data,sock, conect) {
             sock.destroy();
         }
     }
+	else if (query.friends != null)  {
+			conect.query('SELECT sender, recipient from friendsrequest where statuc=true and (sender="' + query.friends.login + '" OR recipient="'+query.friends.login + '") ', function (err, rows, fields) { 
+				//console.log(rows[0]["sender"]);
+				//console.log(rows.length);
+				var friendsList = [];
+				for(var i = 0; i < rows.length; i++) {
+					if(rows[i]["sender"] == query.friends.login) {
+						friendsList[i] = rows[i]["recipient"];
+					}
+					else {
+						friendsList[i] = rows[i]["sender"];
+					}
+				}
+				var qwe = {friends:friendsList}
+				//var a = "" + qwe;
+				sock.write(JSON.stringify(qwe));
+				sock.destroy();
+			});
+			
+	}
     else if (query.token != null) {
     }
     else {
