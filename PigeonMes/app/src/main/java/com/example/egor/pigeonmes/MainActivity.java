@@ -6,37 +6,46 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity{
 
-
-    public void onAuthClick(View v) {
-
-        // doStuff
-        Intent intentApp = new Intent(MainActivity.this,
-                authActivity.class);
-
-        MainActivity.this.startActivity(intentApp);
-
-
-    }public void onRegClick(View v) {
-
-        // doStuff
-        Intent intentApp = new Intent(MainActivity.this,
-                regActivity.class);
-
-        MainActivity.this.startActivity(intentApp);
-
-
-    }
-
-
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //initToolbarmain();
     }
+
+    /*public void initToolbarmain() {
+        toolbar = (Toolbar) findViewById(R.id.toolbarmain);
+        toolbar.setTitle(R.string.app_name);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return false;
+            }
+        });
+    }*/
+
+    public void onAuthClick(View v) {
+        // doStuff
+        Intent intentApp = new Intent(MainActivity.this,
+                authActivity.class);
+        MainActivity.this.startActivity(intentApp);
+    }
+
+    public void onRegClick(View v) {
+        // doStuff
+        Intent intentApp = new Intent(MainActivity.this,
+                regActivity.class);
+        MainActivity.this.startActivity(intentApp);
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
