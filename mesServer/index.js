@@ -7,15 +7,15 @@ var dataH = eventHandlers.dataH;
 
 
 var HOST = '192.168.0.101';
-var PORT = 3000;
-
-/*mconnection.query('insert into users (login, pass) values ("13232", "123")', function(err, rows, fields) {
-    if (!err)
-        console.log('The solution is: ', rows[0]);
-    else
-        console.log('Error while performing Query.');
-});*/
-
+var PORT = 3001;
+/*
+ mconnection.query('insert into users (login, pass) values ("13232", "123")', function(err, rows, fields) {
+ if (!err)
+ console.log('The solution is: ', rows.insertId);
+ else
+ console.log('Error while performing Query.');
+ });
+ */
 
 //Создаем экземпляр сервера
 //Функция внутри - обработчик события 'connection' (то есть, когда к серверу осуществляется подключение)
@@ -39,7 +39,6 @@ var server = net.createServer(function(sock) {
 
 
     sock.on('error', function(data) {
-        console.log(8);
         sock.destroy();
     });
 
