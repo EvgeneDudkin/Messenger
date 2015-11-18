@@ -73,7 +73,7 @@ function dataHandler(data, sock, conect) {
  * @param query запрос
  */
 function authRequest(sock, conect, query) {
-    var answer = {response: "", token: "", friends: []};
+    var answer = {response: "", token: "", dialogs: []};
     if (query.auth.login == null || query.auth.pass == null) {
         answer.response = "Error a8";
         sock.write(JSON.stringify(answer));
@@ -112,7 +112,7 @@ function authRequest(sock, conect, query) {
                 //Вставляем токен в базу
                 conect.query('INSERT into tokens (userId, token) values(' + rows[0]['id'] + ', "' + token + '")', function (err3) {
                     //Проверка ошибки
-                    if (!err3) {
+                    if (!err3) {/*
                         conect.query('select * from users where ' +
                             'exists(select * from friendrequests where reqStatus=1 and ' +
                             '(idSender=id and idRecipient=' + rows[0]['id'] + ') or (idRecipient=id and idSender=' + rows[0]['id'] + '))', function (err4, rows4) {
@@ -133,6 +133,26 @@ function authRequest(sock, conect, query) {
                             }
                             answer.response = "OK";
                             answer.friends = friendsList;
+                            sock.write(JSON.stringify(answer));
+                            sock.destroy();
+                        });
+                        */
+                        conect.query('select id, name from dialogs left join userdialog on dialogs.id = userdialog.dialogId where userId = ' + rows[0]['id'], function (err4, rows4) {
+                            if (err4) {
+                                answer.response = "Error adl4";
+                                sock.write(JSON.stringify(answer));
+                                sock.destroy();
+                                return;
+                            }
+                            var dialogsList = [];
+                            for (var i = 0; i < rows4.length; i++) {
+                                dialogsList[i] = {
+                                    id: rows4[i]['id'],
+                                    name: rows4[i]['name']
+                                };
+                            }
+                            answer.response = "OK";
+                            answer.dialogs = dialogsList;
                             sock.write(JSON.stringify(answer));
                             sock.destroy();
                         });
@@ -379,9 +399,10 @@ function dialogsListRequest(sock, conect, query) {
             return;
         }
 
+        //TODO: exists VS just where VS join ?!??!?!
         //Собственно сама выборка диалогов
-        conect.query('SELECT * FROM dialogs where exists(SELECT * FROM userdialog where userId = ' + rows[0]['userId'] + ' and dialogId = id)', function (err2, rows2) {
-            if (err2) {
+            conect.query('SELECT * FROM dialogs where exists(SELECT * FROM userdialog where userId = ' + rows[0]['userId'] + ' and dialogId = id)', function (err2, rows2) {
+                if (err2) {
                 answer.response = "Error dl4";
                 sock.write(JSON.stringify(answer));
                 sock.destroy();
