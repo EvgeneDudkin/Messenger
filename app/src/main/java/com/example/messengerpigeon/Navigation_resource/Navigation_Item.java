@@ -5,13 +5,11 @@ package com.example.messengerpigeon.Navigation_resource;
  */
 public class Navigation_Item {
     private String title;
-    private String subTitle;
     private int resIcon;
 
-    public Navigation_Item(String title, String subTitle,int resIcon) {
+    public Navigation_Item(String title,int resIcon) {
         super();
         this.title=title;
-        this.subTitle=subTitle;
         this.resIcon=resIcon;
     }
 
@@ -19,16 +17,8 @@ public class Navigation_Item {
         return title;
     }
 
-    public void  setTitle(String title){
-        this.title=title;
-    }
-
-    public String getSubTitle(){
-        return  subTitle;
-    }
-
-    public void setSubTitle(String subTitle){
-        this.subTitle = subTitle;
+    public void  setTitle(String title) {
+        this.title = title;
     }
 
     public int getResIcon(){

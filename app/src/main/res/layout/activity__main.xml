@@ -33,7 +33,7 @@
         android:layout_alignLeft="@+id/button_reg_main"
         android:layout_alignStart="@+id/button_reg_main"
         android:background="@drawable/round_corner"
-
+        android:layout_marginBottom="10dp"
         android:text="@string/str_button_entry"
         android:textColor="@color/colorWhite" />
 

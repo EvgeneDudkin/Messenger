@@ -7,13 +7,13 @@
 
     <ImageView
         android:id="@+id/imageIcon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:src="@drawable/friends"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="20dp"
         android:orientation="vertical"
         android:gravity="center_vertical">
 
@@ -27,14 +27,7 @@
             android:layout_marginLeft="10dp"
             android:text="@string/friends"/>
 
-        <TextView
-            android:id="@+id/subTitle"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/colorPrimary"
-            android:layout_marginLeft="10dp"
-            android:text="bla bla bla"/>
+
 
     </LinearLayout>
 

@@ -7,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -42,8 +43,16 @@ public class Activity_Navigation extends AppCompatActivity {
     }
     private void initToolbar() {
         toolbar=(Toolbar) findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                return false;
+            }
+        });
+
+        toolbar.inflateMenu(R.menu.menu);
 
     }
 
@@ -58,12 +67,9 @@ public class Activity_Navigation extends AppCompatActivity {
         listViewNavigation = (ListView) findViewById(R.id.navigation_list);
 
         listNavigationItems = new ArrayList<Navigation_Item>();
-        listNavigationItems.add(new Navigation_Item("Friends", "List of friends",
-                R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("Messages", "List of Messages",
-                R.drawable.message));
-        listNavigationItems.add(new Navigation_Item("Settings", "List of settings",
-                R.drawable.settings));
+        listNavigationItems.add(new Navigation_Item("Friends", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("Messages", R.drawable.message));
+        listNavigationItems.add(new Navigation_Item("Settings", R.drawable.settings));
 
         NavigationListAdapter navigationListAdapter = new NavigationListAdapter(getApplicationContext(),
                 R.layout.item_navigation_list, listNavigationItems);
