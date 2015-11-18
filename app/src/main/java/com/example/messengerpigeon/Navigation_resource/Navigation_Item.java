@@ -1,0 +1,41 @@
+package com.example.messengerpigeon.Navigation_resource;
+
+/**
+ * Created by Пользователь on 17.11.2015.
+ */
+public class Navigation_Item {
+    private String title;
+    private String subTitle;
+    private int resIcon;
+
+    public Navigation_Item(String title, String subTitle,int resIcon) {
+        super();
+        this.title=title;
+        this.subTitle=subTitle;
+        this.resIcon=resIcon;
+    }
+
+    public String getTitle(){
+        return title;
+    }
+
+    public void  setTitle(String title){
+        this.title=title;
+    }
+
+    public String getSubTitle(){
+        return  subTitle;
+    }
+
+    public void setSubTitle(String subTitle){
+        this.subTitle = subTitle;
+    }
+
+    public int getResIcon(){
+        return  resIcon;
+    }
+
+    public void setResIcon(int resIcon){
+        this.resIcon=resIcon;
+    }
+}

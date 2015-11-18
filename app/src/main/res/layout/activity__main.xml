@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".Activity_Main"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="270dp"
+        android:layout_height="300dp"
+        android:layout_alignLeft="@+id/button_entry_main"
+        android:layout_alignStart="@+id/button_entry_main">
+
+        <ImageView
+            android:id="@+id/pigeon_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:background="@drawable/round_image"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_entry_main"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_reg_main"
+        android:layout_alignLeft="@+id/button_reg_main"
+        android:layout_alignStart="@+id/button_reg_main"
+        android:background="@drawable/round_corner"
+
+        android:text="@string/str_button_entry"
+        android:textColor="@color/colorWhite" />
+
+    <Button
+        android:id="@+id/button_reg_main"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/round_corner"
+        android:text="@string/str_button_reg"
+        android:textColor="@color/colorWhite" />
+
+
+
+</RelativeLayout>
