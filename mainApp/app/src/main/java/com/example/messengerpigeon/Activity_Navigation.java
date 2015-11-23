@@ -82,10 +82,10 @@ public class Activity_Navigation extends AppCompatActivity {
 
         //load first fragment as default:
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
 
-        setTitle(listNavigationItems.get(0).getTitle());
-        listViewNavigation.setItemChecked(0, true);
+        setTitle(listNavigationItems.get(1).getTitle());
+        listViewNavigation.setItemChecked(1, true);
         drawerLayout.closeDrawer(drawerPane);
 
         //set listener for navigation items:

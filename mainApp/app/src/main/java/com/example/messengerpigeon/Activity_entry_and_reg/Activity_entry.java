@@ -8,23 +8,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-
 import com.example.messengerpigeon.Activity_Navigation;
 import com.example.messengerpigeon.R;
-import com.example.messengerpigeon.serverInfo;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
-
-import org.json.JSONException;
+import com.example.messengerpigeon.serverInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Activity_entry extends AppCompatActivity{
 
@@ -77,15 +71,17 @@ public class Activity_entry extends AppCompatActivity{
                 System.out.println(ret);
                 authReq.responseHandler(ret);
                 authReq.errorHandler();
+                Intent intentEntry = new Intent(Activity_entry.this, Activity_Navigation.class);
+                Activity_entry.this.startActivity(intentEntry);
             }
             catch (userNotFoundException e) {
                 /*
-                * TODO: ЧТО ДЕЛАТЬ ЕСЛИ ТАКОЙ ПОЛЬЗОВАТЕЛЬ НЕ НАЙДЕН
+                * TODO: пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 * */
             }
             catch (Exception e) {
                 /*
-                * TODO: ЕСЛИ ЛЮБАЯ ДРУГАЯ ОШИБКА
+                * TODO: пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 * */
             }
 
@@ -106,7 +102,7 @@ public class Activity_entry extends AppCompatActivity{
             }
         }
 
-        //Отправляем строку и ждем ответа
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         public String sendAndListen(String text) {
             try {
                 DataOutputStream dos = new DataOutputStream(
@@ -115,8 +111,8 @@ public class Activity_entry extends AppCompatActivity{
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
-                //Блок чтения ответа.
-                //TODO: Пошаманить тут
+                //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
+                //TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 byte buffer[] = new byte[1024];
                 int s=dis.read(buffer);

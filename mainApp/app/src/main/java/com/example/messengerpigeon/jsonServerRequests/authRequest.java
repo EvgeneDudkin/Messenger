@@ -20,7 +20,7 @@ public class authRequest extends jsonServerRequests {
     /**
      * Список друзей
      */
-    private dialog[] dialogs = null;
+    public static dialog[] dialogs = null;
 
     /**
      * Пустой конструктор
@@ -123,7 +123,7 @@ public class authRequest extends jsonServerRequests {
      * Геттер списка друзей
      * @return список друзей
      */
-    public dialog[] getDialogs() {
+    public static dialog[] getDialogs() {
         return dialogs;
     }
 }

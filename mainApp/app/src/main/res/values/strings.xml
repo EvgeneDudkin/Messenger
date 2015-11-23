@@ -17,4 +17,6 @@
     <string name="view_navigation_open">Open</string>
     <string name="view_navigation_close">Close</string>
     <string name="sometext">%s</string>
+    <string name="friend_name">Имя фамилия</string>
+    <string name="friend_login">Login friend</string>
 </resources>
