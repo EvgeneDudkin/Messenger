@@ -1,39 +1,46 @@
 package com.example.messengerpigeon.Fragments;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ListView;
 
-import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.History.HistoryListAdapter;
+import com.example.messengerpigeon.History.History_Item;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.messageRequest;
-import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
+import com.example.messengerpigeon.miniClasses.message;
 import com.example.messengerpigeon.serverInfo;
-
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by egor on 20.11.2015.
  */
 public class fragments_messages_item extends Fragment {
+    ListView listViewHistory;
+    List<Fragment> listFragmentHistory;
+    List<History_Item> listHistoryItem;
+
     authRequest authReq= new authRequest();
     View v=null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_dialog, container, false);
+
+        listViewHistory=(ListView)v.findViewById(R.id.list_history);
+        listHistoryItem=new ArrayList<History_Item>();
 
         AuthTask at = new AuthTask();
         at.execute(authReq.getToken(), "1","20");
@@ -52,25 +59,30 @@ public class fragments_messages_item extends Fragment {
         @Override
         protected void onPostExecute(final String ret) {
             try {
-            mesReq.responseHandler(ret);
-                int i=mesReq.messages.length;
-                mesReq.getMessage(0);
-                TextView tt=(TextView)v.findViewById(R.id.dialogText);
-                tt.setText(mesReq.getMessage(i));
-                JSONObject obj = new JSONObject(ret);
+                System.out.println(ret);
+                mesReq.responseHandler(ret);
 
-            System.out.println(ret);
+                message[] mess=mesReq.getMessages();
+                System.out.println(mess);
+                  int l=mess.length;
+
+                for(int i=0;i<l;i++) {
+                    listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, "time"));
+                }
+                HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
+
+                listViewHistory.setAdapter(messagesListAdapter);
+                listViewHistory.smoothScrollToPosition(l-1);
 
             } catch (Exception ignored) {
-
+                ignored.printStackTrace();
             }
-
         }
 
         @Override
         protected String doInBackground(String... data) {
             try {
-                mesReq.createRequest(data[0],Integer.parseInt(data[1]),Integer.parseInt(data[2]));
+                mesReq.createRequest(data[0], Integer.parseInt(data[1]), Integer.parseInt(data[2]));
                 InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                 System.out.println(serverAddr);
                 socket = new Socket(serverAddr, serverInfo.getPort());
@@ -93,7 +105,7 @@ public class fragments_messages_item extends Fragment {
                 //���� ������ ������.
                 //TODO: ���������� ���
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte buffer[] = new byte[1024];
+                byte buffer[] = new byte[555553];
                 int s=dis.read(buffer);
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
@@ -105,6 +117,8 @@ public class fragments_messages_item extends Fragment {
             }
 
         }
+
+
 
     }
 }

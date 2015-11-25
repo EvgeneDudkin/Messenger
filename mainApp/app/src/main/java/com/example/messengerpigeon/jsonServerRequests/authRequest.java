@@ -29,12 +29,15 @@ public class authRequest extends jsonServerRequests {
 
     }
 
+    public static String MyLogin="";
+
     /**
      * Конструктор
      * @param login логин
      * @param pass пароль
      */
     public authRequest(String login, String pass) throws JSONException {
+        MyLogin=login;
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
         auth.put("login", login);
@@ -50,6 +53,7 @@ public class authRequest extends jsonServerRequests {
      * @param pass пароль
      */
     public void createRequest(String login, String pass) throws JSONException {
+        MyLogin=login;
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
         auth.put("login", login);
@@ -126,4 +130,6 @@ public class authRequest extends jsonServerRequests {
     public static dialog[] getDialogs() {
         return dialogs;
     }
+
+    public static String getMyLogin(){return MyLogin;}
 }

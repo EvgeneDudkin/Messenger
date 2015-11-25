@@ -1,13 +1,12 @@
 package com.example.messengerpigeon.jsonServerRequests;
 
-import com.example.messengerpigeon.miniClasses.dialog;
+import com.example.messengerpigeon.miniClasses.message;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
-import com.example.messengerpigeon.miniClasses.message;
 /**
  * Created by egor on 25.11.2015.
  */
@@ -54,7 +53,7 @@ public class messageRequest extends jsonServerRequests {
      * override Обработчик ответа сервера
      * @param input Строка, которую вернул сервер
      */
-    public void responseHandler(String input) {
+    public  void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
             response = ret.get("response").toString();
@@ -110,7 +109,7 @@ public class messageRequest extends jsonServerRequests {
         return response;
     }
     public String getMessage(int i) {
-        if(i<0 || i>messages.length)
+        if(i<0 || i>=messages.length)
             return "";
         return messages[i].text;
     }
