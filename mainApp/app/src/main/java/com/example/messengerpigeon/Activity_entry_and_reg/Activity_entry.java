@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.LoginPasswordValidator;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
@@ -19,11 +21,19 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Objects;
 
 public class Activity_entry extends AppCompatActivity{
 
     private Toolbar toolbar;
     private Button button_entry;
+    private EditText text_login;
+    private EditText text_password;
+
+    View focus=null;
+
+    LoginPasswordValidator loginPasswordValidator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +44,9 @@ public class Activity_entry extends AppCompatActivity{
         button_entry=(Button)findViewById(R.id.button_entry);
         button_entry.setOnClickListener(onClickListenermain);
 
+        text_login=(EditText)findViewById(R.id.text_login);
+        text_password=(EditText)findViewById(R.id.text_password);
+
         initToolbar();
     }
 
@@ -43,13 +56,54 @@ public class Activity_entry extends AppCompatActivity{
         toolbar.setTitle(R.string.app_name);
     }
 
+    private boolean checkLogin(String login) {
+        loginPasswordValidator= new LoginPasswordValidator();
+        if(!loginPasswordValidator.validateLogin(login)) {
+            if (login.length() < 4) {
+                text_login.setError("Логин должен быть не меньше 4 символов");
+                focus= text_login;
+                return false;
+            }
+            else{
+                text_login.setError("Логин может состоять только из букв русского, английского алфавита и цифр");
+                focus = text_login;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkPass(String pass1) {
+        loginPasswordValidator = new LoginPasswordValidator();
+        if (loginPasswordValidator.validatePassword(pass1)) {
+        } else {
+            if (pass1.length() < 5) {
+                text_password.setError("Пароль должен быть длинее 4 символов");
+                focus = text_password;
+                return false;
+            } else {
+                text_password.setError("Пароль может состоять только из букв английского алфавита и цифр, а также должен быть длинее 4 символов");
+                focus = text_password;
+                return false;
+            }
+        }
+        return true;
+    }
+
     View.OnClickListener onClickListenermain = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.button_entry:
                     AuthTask at = new AuthTask();
-                    at.execute("qwerty", "qwerty");
+                    String login=text_login.getText().toString();
+                    String pass=text_password.getText().toString();
+                    loginPasswordValidator = new LoginPasswordValidator();
+                    if (!checkLogin(login)||!checkPass(pass)) {
+                        focus.requestFocus();
+                    } else {
+                        at.execute(login, pass);
+                    }
                     break;
             }
         }
@@ -62,7 +116,6 @@ public class Activity_entry extends AppCompatActivity{
         protected void onPreExecute(){
             super.onPreExecute();
             authReq = new authRequest();
-            System.out.println("1");
         }
 
         @Override
