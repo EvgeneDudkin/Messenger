@@ -10,6 +10,6 @@
         android:text="DIALOG"
         android:textColor="#000"
         android:textSize="18sp"
-        android:textStyle="bold" />
-
+        android:textStyle="bold"
+        android:id="@+id/dialogText"/>
 </LinearLayout>
