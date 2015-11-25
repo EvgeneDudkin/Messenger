@@ -17,14 +17,14 @@
 			{
 			response: "%response%",
 			token: "%token%",
-			friends: [%friendsList%]==========================================ДИАЛОГИ ВОЗВРАЩАТЬ НАДО
+			dialogs: [%dialogsList%]
 			}
 			
 		%response% - ответ сервера. "Error N" or "OK"
 			"Error N" - ошибка N => %token% = ""
 			"OK" - ошибки нет
 		%token% - идентификатор пользователя, для дальнейших запросов
-		%friendsList% - список друзей вида {login: %login%, id: %id%, firstName: %firstName%, lastName: %lastName%}
+		%dialogsList% - список друзей вида {id: %id%, name: %name%}
 		
 Регистрация:
 	CLient->Server:
