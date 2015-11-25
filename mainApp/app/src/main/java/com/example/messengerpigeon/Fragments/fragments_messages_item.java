@@ -16,6 +16,8 @@ import com.example.messengerpigeon.jsonServerRequests.messageRequest;
 import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
 import com.example.messengerpigeon.serverInfo;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -32,7 +34,6 @@ public class fragments_messages_item extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_dialog, container, false);
-        TextView tt=(TextView)v.findViewById(R.id.dialogText);
 
         AuthTask at = new AuthTask();
         at.execute(authReq.getToken(), "1","20");
@@ -50,9 +51,19 @@ public class fragments_messages_item extends Fragment {
 
         @Override
         protected void onPostExecute(final String ret) {
-            TextView tt=(TextView)v.findViewById(R.id.dialogText);
-            tt.setText(ret);
+            try {
+            mesReq.responseHandler(ret);
+                int i=mesReq.messages.length;
+                mesReq.getMessage(0);
+                TextView tt=(TextView)v.findViewById(R.id.dialogText);
+                tt.setText(mesReq.getMessage(i));
+                JSONObject obj = new JSONObject(ret);
+
             System.out.println(ret);
+
+            } catch (Exception ignored) {
+
+            }
 
         }
 

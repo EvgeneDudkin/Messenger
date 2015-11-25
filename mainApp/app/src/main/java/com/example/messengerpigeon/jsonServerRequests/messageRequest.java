@@ -109,7 +109,11 @@ public class messageRequest extends jsonServerRequests {
     public String getResponse() {
         return response;
     }
-
+    public String getMessage(int i) {
+        if(i<0 || i>messages.length)
+            return "";
+        return messages[i].text;
+    }
     /**
      * Геттер списка друзей
      * @return список друзей
