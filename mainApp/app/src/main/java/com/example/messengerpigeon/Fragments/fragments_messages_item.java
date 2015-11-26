@@ -58,7 +58,7 @@ public class fragments_messages_item extends Fragment {
             switch (v.getId()){
                 case R.id.button_send:
                     AuthTask at = new AuthTask();
-                    EditText tt=(EditText)v.findViewById(R.id.text_Send);
+                    EditText tt=(EditText)View.findViewById(R.id.text_Send);
                     at.execute("send",authReq.getToken(),"1",tt.getText().toString());
             }
         }
