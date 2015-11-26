@@ -15,16 +15,8 @@ public class messageRequest extends jsonServerRequests {
     /**
      * Токен, который вернул сервер
      */
-    private enum requestType{
-        LIST,
-        SENDMSG
-    }
     private String token = "";
     private String login = "";
-    private String msgListRequest="";
-    private String msgSendRequest="";
-    private  requestType reqType=requestType.LIST;
-
     /**
      * Список друзей
      */
@@ -44,26 +36,17 @@ public class messageRequest extends jsonServerRequests {
      * @param messageCount
      * @throws JSONException
      */
-    public void messageListRequest(String token, int dialogId, int messageCount) throws JSONException {
+    public void createRequest(String token, int dialogId, int messageCount) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject req = new JSONObject();
         req.put("token", token);
         req.put("dialogId", dialogId);
         req.put("messageCount", messageCount);
         obj.put("lastNmsg", req);
-        msgListRequest = obj.toString();
+        strRequest = obj.toString();
         jsonRequest = obj;
     }
-    public void sendMessageRequest(String token, int dialogId, String msg) throws JSONException {
-        JSONObject obj = new JSONObject();
-        JSONObject req = new JSONObject();
-        req.put("token", token);
-        req.put("dialogId", dialogId);
-        req.put("msg", msg);
-        obj.put("sendMsg", req);
-        msgSendRequest = obj.toString();
-        jsonRequest = obj;
-    }
+
 
 
     /**
@@ -74,24 +57,13 @@ public class messageRequest extends jsonServerRequests {
         try {
             JSONObject ret = new JSONObject(input);
             response = ret.get("response").toString();
-
             response = Objects.equals(response, "OK") ? response : response.substring(6);
-            if(response.equals("OK")) {
-                if (ret.has("messages"))
-                {
-                    JSONArray jsonMessage = ret.getJSONArray("messages");
-                    messages = new message[jsonMessage.length()];
-                    for (int i = 0; i < jsonMessage.length(); i++) {
-                        messages[i] = new message(jsonMessage.getJSONObject(i));
-                    }
-                    reqType=requestType.LIST;
-                }
-                else
-                {
-                    reqType=requestType.SENDMSG;
-                }
-            }
 
+            JSONArray jsonMessage = ret.getJSONArray("messages");
+            messages = new message[jsonMessage.length()];
+            for (int i = 0; i < jsonMessage.length(); i++) {
+                messages[i] = new message(jsonMessage.getJSONObject(i));
+            }
         } catch (Exception ignored) {
             token = "";
             response = "j1";
@@ -120,14 +92,7 @@ public class messageRequest extends jsonServerRequests {
                 throw new Exception("token does not generate. Error a5");
         }
     }
-    public String getRequestType()
-    {
-        if(reqType==requestType.LIST)
-            return "list";
-        if(reqType==requestType.SENDMSG)
-            return "send";
-        return "";
-    }
+
     /**
      * Геттер токена
      * @return токен
@@ -135,12 +100,7 @@ public class messageRequest extends jsonServerRequests {
     public String getToken() {
         return token;
     }
-    public String getMsgListRequest() {
-        return msgListRequest;
-    }
-    public String getMsgSendRequest() {
-        return msgSendRequest;
-    }
+
     /**
      * Геттер реакции сервера
      * @return реакция сервера

@@ -2,13 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:clickable="false">
 
+
+    <EditText
+        android:layout_width="194dp"
+        android:layout_height="54dp"
+        android:id="@+id/editText" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="104dp"
+        android:layout_height="wrap_content"
+        android:text="Поиск"
+        android:id="@+id/button"
+        android:layout_gravity="right"
+        android:enabled="true"
+        android:elegantTextHeight="false" />
 
     <ListView
         android:id="@+id/list_friends"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="498dp"
         android:background="@color/colorWhite"
         android:choiceMode="singleChoice" />
 
