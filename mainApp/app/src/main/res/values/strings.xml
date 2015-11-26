@@ -13,7 +13,7 @@
     <string name="message">Message</string>
     <string name="favorites">Favorites</string>
     <string name="tunings">Tunings</string>
-    <string name="str_button_send">Отправить</string>
+
     <string name="view_navigation_open">Open</string>
     <string name="view_navigation_close">Close</string>
     <string name="sometext">%s</string>

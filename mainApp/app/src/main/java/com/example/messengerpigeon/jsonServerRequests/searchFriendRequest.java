@@ -1,87 +1,71 @@
 package com.example.messengerpigeon.jsonServerRequests;
 
-import com.example.messengerpigeon.miniClasses.dialog;
+import com.example.messengerpigeon.miniClasses.friend;
+import com.example.messengerpigeon.miniClasses.message;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.Objects;
 
 /**
- * Дочерний класс, запрос авторизации
+ * Created by Евгений on 27.11.2015.
  */
-public class authRequest extends jsonServerRequests {
+public class searchFriendRequest extends jsonServerRequests {
 
     /**
      * Токен, который вернул сервер
      */
-    private static String token = "";
+    private String token = "";
     /**
      * Список друзей
      */
-    public static dialog[] dialogs = null;
+    public static friend[] friends = null;
 
     /**
      * Пустой конструктор
      */
-    public authRequest() {
+    public searchFriendRequest() {
 
     }
 
-    public static String MyLogin="";
-
     /**
-     * Конструктор
-     * @param login логин
-     * @param pass пароль
+     *
+     * @param token
+     * @param searchPattern
+     * @throws JSONException
      */
-    public authRequest(String login, String pass) throws JSONException {
-        MyLogin=login;
+    public void createRequest(String token, String searchPattern) throws JSONException {
         JSONObject obj = new JSONObject();
-        JSONObject auth = new JSONObject();
-        auth.put("login", login);
-        auth.put("pass", pass);
-        obj.put("auth", auth);
+        JSONObject req = new JSONObject();
+        req.put("token", token);
+        req.put("searchPattern", searchPattern);
+        obj.put("friendsS", req);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
 
-    /**
-     * Метод создания запроса
-     * @param login логин
-     * @param pass пароль
-     */
-    public void createRequest(String login, String pass) throws JSONException {
-        MyLogin=login;
-        JSONObject obj = new JSONObject();
-        JSONObject auth = new JSONObject();
-        auth.put("login", login);
-        auth.put("pass", pass);
-        obj.put("auth", auth);
-        strRequest = obj.toString();
-        jsonRequest = obj;
-    }
+
 
     /**
      * override Обработчик ответа сервера
      * @param input Строка, которую вернул сервер
      */
-    public void responseHandler(String input) {
+    public  void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
-            token = ret.get("token").toString();
             response = ret.get("response").toString();
             response = Objects.equals(response, "OK") ? response : response.substring(6);
-            JSONArray jsonDialogs = ret.getJSONArray("dialogs");
-            dialogs = new dialog[jsonDialogs.length()];
-            for (int i = 0; i < jsonDialogs.length(); i++) {
-                dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
+
+            JSONArray jsonFriends = ret.getJSONArray("friends");
+            friends = new friend[jsonFriends.length()];
+            for (int i = 0; i < jsonFriends.length(); i++) {
+                friends[i] = new friend(jsonFriends.getJSONObject(i));
             }
         } catch (Exception ignored) {
             token = "";
             response = "j1";
-            dialogs = null;
+            friends = null;
         }
     }
 
@@ -111,7 +95,7 @@ public class authRequest extends jsonServerRequests {
      * Геттер токена
      * @return токен
      */
-    public static String getToken() {
+    public String getToken() {
         return token;
     }
 
@@ -122,14 +106,16 @@ public class authRequest extends jsonServerRequests {
     public String getResponse() {
         return response;
     }
-
+    public String getLogin(int i) {
+        if(i<0 || i>=friends.length)
+            return "";
+        return friends[i].Login;
+    }
     /**
      * Геттер списка друзей
      * @return список друзей
      */
-    public static dialog[] getDialogs() {
-        return dialogs;
+    public static friend[] getFriends() {
+        return friends;
     }
-
-    public static String getMyLogin(){return MyLogin;}
 }
