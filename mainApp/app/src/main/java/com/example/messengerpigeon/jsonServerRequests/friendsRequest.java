@@ -31,6 +31,7 @@ public class friendsRequest extends jsonServerRequests {
         JSONObject obj = new JSONObject();
         JSONObject fr = new JSONObject();
         fr.put("token",token);
+        obj.put("friendsL",fr);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
@@ -43,6 +44,7 @@ public class friendsRequest extends jsonServerRequests {
         JSONObject obj = new JSONObject();
         JSONObject fr = new JSONObject();
         fr.put("token",token);
+        obj.put("friendsL",fr);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
@@ -54,7 +56,6 @@ public class friendsRequest extends jsonServerRequests {
     public void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
-            token = ret.get("token").toString();
             response = ret.get("response").toString();
             response = Objects.equals(response, "OK") ? response : response.substring(6);
             JSONArray jsonDialogs = ret.getJSONArray("friends");
@@ -66,6 +67,7 @@ public class friendsRequest extends jsonServerRequests {
             token = "";
             response = "j1";
             friends = null;
+            ignored.printStackTrace();
         }
     }
 
@@ -104,7 +106,7 @@ public class friendsRequest extends jsonServerRequests {
      * Геттер списка друзей
      * @return список друзей
      */
-    public static friend[] getDialogs() {
+    public static friend[] getListFriends() {
         return friends;
     }
 

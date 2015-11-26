@@ -43,7 +43,7 @@ public class fragments_messages_item extends Fragment {
         listHistoryItem=new ArrayList<History_Item>();
 
         AuthTask at = new AuthTask();
-        at.execute(authReq.getToken(), "1","20");
+        at.execute(authReq.getToken());
         return v;
     }
     public class AuthTask extends AsyncTask<String, Void, String> {
