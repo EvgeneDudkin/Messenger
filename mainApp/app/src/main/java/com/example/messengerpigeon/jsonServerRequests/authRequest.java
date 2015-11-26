@@ -131,5 +131,5 @@ public class authRequest extends jsonServerRequests {
         return dialogs;
     }
 
-    public static String getMyLogin(){return MyLogin;}
+    public final static String getMyLogin(){return MyLogin;}
 }
