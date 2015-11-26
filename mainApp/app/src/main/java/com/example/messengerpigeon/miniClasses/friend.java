@@ -14,8 +14,8 @@ public class friend {
 
     public friend(JSONObject fr) throws JSONException {
         Login = fr.getString("login");
-        FirstName = fr.getString("firstName");
-        LastName = fr.getString("lastName");
+        FirstName = fr.isNull("firstName") ? "" : fr.getString("firstName");
+        LastName = fr.isNull("lastName") ? "" :fr.getString("lastName");
         Id = fr.getInt("id");
     }
 }
