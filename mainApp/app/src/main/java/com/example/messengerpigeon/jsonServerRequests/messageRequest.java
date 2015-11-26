@@ -1,87 +1,73 @@
 package com.example.messengerpigeon.jsonServerRequests;
 
-import com.example.messengerpigeon.miniClasses.dialog;
+import com.example.messengerpigeon.miniClasses.message;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
-
 /**
- * Дочерний класс, запрос авторизации
+ * Created by egor on 25.11.2015.
  */
-public class authRequest extends jsonServerRequests {
+public class messageRequest extends jsonServerRequests {
 
     /**
      * Токен, который вернул сервер
      */
-    private static String token = "";
+    private String token = "";
+    private String login = "";
     /**
      * Список друзей
      */
-    public static dialog[] dialogs = null;
+    public static message[] messages = null;
 
     /**
      * Пустой конструктор
      */
-    public authRequest() {
+    public messageRequest() {
 
     }
 
-    public static String MyLogin="";
-
     /**
-     * Конструктор
-     * @param login логин
-     * @param pass пароль
+     *
+     * @param token
+     * @param dialogId
+     * @param messageCount
+     * @throws JSONException
      */
-    public authRequest(String login, String pass) throws JSONException {
-        MyLogin=login;
+    public void createRequest(String token, int dialogId, int messageCount) throws JSONException {
         JSONObject obj = new JSONObject();
-        JSONObject auth = new JSONObject();
-        auth.put("login", login);
-        auth.put("pass", pass);
-        obj.put("auth", auth);
+        JSONObject req = new JSONObject();
+        req.put("token", token);
+        req.put("dialogId", dialogId);
+        req.put("messageCount", messageCount);
+        obj.put("lastNmsg", req);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
 
-    /**
-     * Метод создания запроса
-     * @param login логин
-     * @param pass пароль
-     */
-    public void createRequest(String login, String pass) throws JSONException {
-        MyLogin=login;
-        JSONObject obj = new JSONObject();
-        JSONObject auth = new JSONObject();
-        auth.put("login", login);
-        auth.put("pass", pass);
-        obj.put("auth", auth);
-        strRequest = obj.toString();
-        jsonRequest = obj;
-    }
+
 
     /**
      * override Обработчик ответа сервера
      * @param input Строка, которую вернул сервер
      */
-    public void responseHandler(String input) {
+    public  void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
-            token = ret.get("token").toString();
             response = ret.get("response").toString();
             response = Objects.equals(response, "OK") ? response : response.substring(6);
-            JSONArray jsonDialogs = ret.getJSONArray("dialogs");
-            dialogs = new dialog[jsonDialogs.length()];
-            for (int i = 0; i < jsonDialogs.length(); i++) {
-                dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
+
+            JSONArray jsonMessage = ret.getJSONArray("messages");
+            messages = new message[jsonMessage.length()];
+            for (int i = 0; i < jsonMessage.length(); i++) {
+                messages[i] = new message(jsonMessage.getJSONObject(i));
             }
         } catch (Exception ignored) {
             token = "";
             response = "j1";
-            dialogs = null;
+            messages = null;
         }
     }
 
@@ -111,7 +97,7 @@ public class authRequest extends jsonServerRequests {
      * Геттер токена
      * @return токен
      */
-    public static String getToken() {
+    public String getToken() {
         return token;
     }
 
@@ -122,14 +108,16 @@ public class authRequest extends jsonServerRequests {
     public String getResponse() {
         return response;
     }
-
+    public String getMessage(int i) {
+        if(i<0 || i>=messages.length)
+            return "";
+        return messages[i].text;
+    }
     /**
      * Геттер списка друзей
      * @return список друзей
      */
-    public static dialog[] getDialogs() {
-        return dialogs;
+    public static message[] getMessages() {
+        return messages;
     }
-
-    public static String getMyLogin(){return MyLogin;}
 }
