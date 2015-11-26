@@ -6,7 +6,7 @@ var mconnection = mysqlConnection.connection;
 var dataH = eventHandlers.dataH;
 
 
-var HOST = '172.20.234.242';
+var HOST = '192.168.0.101';
 var PORT = 3000;
 
 //Создаем экземпляр сервера
