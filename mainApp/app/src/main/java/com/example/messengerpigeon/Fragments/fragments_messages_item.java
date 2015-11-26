@@ -18,4 +18,6 @@ public class fragments_messages_item extends Fragment {
         View v = inflater.inflate(R.layout.fragment_dialog, container, false);
         return v;
     }
+
+    
 }

@@ -3,6 +3,7 @@
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimary_enty_and_reg">#5be2f7</color>
     <color name="colorPrimaryDark">#3242d6</color>
+    <color name="colorPrimaryDarkDark">#081269</color>
     <color name="colormainBackground">#e2e2e2</color>
     <color name="colorWhite">#e2e2e2</color>
     <color name="colorRed">#ff0000</color>
