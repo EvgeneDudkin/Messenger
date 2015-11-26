@@ -1,5 +1,7 @@
 package com.example.messengerpigeon.Activity_entry_and_reg;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.widget.EditText;
 
 import com.example.messengerpigeon.Activity_Navigation;
 import com.example.messengerpigeon.LoginPasswordValidator;
+import com.example.messengerpigeon.MainActivity;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.regRequest;
 import com.example.messengerpigeon.jsonServerRequests.userAlreadyExistsException;
@@ -144,16 +147,19 @@ public class Activity_reg extends AppCompatActivity{
                 System.out.println(ret);
                 regReq.responseHandler(ret);
                 regReq.errorHandler();
-                Intent intentEntry = new Intent(Activity_reg.this, Activity_Navigation.class);
+                Intent intentEntry = new Intent(Activity_reg.this, Activity_entry.class);
                 Activity_reg.this.startActivity(intentEntry);
+                finish();
             } catch (userAlreadyExistsException e) {
                 /*
                 * TODO: ��� ������ ���� ����� ������������ �� ������
                 * */
+                text_login.setError("Пользователь уже существует");
             } catch (Exception e) {
                 /*
                 * TODO: ���� ����� ������ ������
                 * */
+                text_login.setError("Ошибка регистрации");
             }
 
         }
@@ -199,4 +205,31 @@ public class Activity_reg extends AppCompatActivity{
         }
     }
 
+
+    @Override
+    public void onBackPressed() {
+        openQuitDialog();
+    }
+
+    private void openQuitDialog() {
+        AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
+        quitDialog.setTitle("Регистрация не завершена! Выйти?");
+
+        quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intentMainActivity = new Intent(Activity_reg.this, MainActivity.class);
+                Activity_reg.this.startActivity(intentMainActivity);
+                finish();
+            }
+        });
+
+        quitDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        quitDialog.show();
+    }
 }

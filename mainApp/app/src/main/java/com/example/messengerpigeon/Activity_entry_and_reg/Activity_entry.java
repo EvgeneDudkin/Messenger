@@ -1,5 +1,6 @@
 package com.example.messengerpigeon.Activity_entry_and_reg;
 
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 
 import com.example.messengerpigeon.Activity_Navigation;
 import com.example.messengerpigeon.LoginPasswordValidator;
+import com.example.messengerpigeon.MainActivity;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
@@ -126,16 +128,19 @@ public class Activity_entry extends AppCompatActivity{
                 authReq.errorHandler();
                 Intent intentEntry = new Intent(Activity_entry.this, Activity_Navigation.class);
                 Activity_entry.this.startActivity(intentEntry);
+                finish();
             }
             catch (userNotFoundException e) {
                 /*
                 * TODO: ��� ������ ���� ����� ������������ �� ������
                 * */
+                text_login.setError("Пользователь не найден");
             }
             catch (Exception e) {
                 /*
                 * TODO: ���� ����� ������ ������
                 * */
+                text_login.setError("Ошибка входа");
             }
 
         }
@@ -180,6 +185,11 @@ public class Activity_entry extends AppCompatActivity{
 
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
 }
