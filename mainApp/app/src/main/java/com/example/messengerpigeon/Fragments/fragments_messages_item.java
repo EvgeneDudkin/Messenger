@@ -37,20 +37,20 @@ public class fragments_messages_item extends Fragment {
     List<History_Item> listHistoryItem;
     private Button button_send;
     authRequest authReq= new authRequest();
-    View v=null;
+    View vv=null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        v = inflater.inflate(R.layout.fragment_dialog, container, false);
+        vv = inflater.inflate(R.layout.fragment_dialog, container, false);
 
-        listViewHistory=(ListView)v.findViewById(R.id.list_history);
+        listViewHistory=(ListView)vv.findViewById(R.id.list_history);
         listHistoryItem=new ArrayList<History_Item>();
-        button_send=(Button)v.findViewById(R.id.button_send);
+        button_send=(Button)vv.findViewById(R.id.button_send);
         button_send.setOnClickListener(onClickListenermain);
 
         AuthTask at = new AuthTask();
         at.execute("list",authReq.getToken(), "1","20");
-        return v;
+        return vv;
     }
     View.OnClickListener onClickListenermain = new View.OnClickListener(){
         @Override
@@ -58,8 +58,9 @@ public class fragments_messages_item extends Fragment {
             switch (v.getId()){
                 case R.id.button_send:
                     AuthTask at = new AuthTask();
-                    EditText tt=(EditText)View.findViewById(R.id.text_Send);
+                    EditText tt=(EditText)vv.findViewById(R.id.text_Send);
                     at.execute("send",authReq.getToken(),"1",tt.getText().toString());
+                    tt.setText("");
             }
         }
     };
@@ -143,7 +144,7 @@ public class fragments_messages_item extends Fragment {
                 //���� ������ ������.
                 //TODO: ���������� ���
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte buffer[] = new byte[555553];
+                byte buffer[] = new byte[10000000];
                 int s=dis.read(buffer);
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
