@@ -555,4 +555,68 @@ function friendsSearchRequest(sock, conect, query) {
     });
 }
 
+function lastNmsgRequest(sock, conect, query) {
+    var answer = {response: "", messages: []};
+    if (query.lastNmsg.token == null || query.lastNmsg.dialogId == null || query.lastNmsg.messageCount == null) {
+        answer.response = "Error ln1";
+        console.log("Error ln1");
+        sock.write(JSON.stringify(answer));
+        sock.destroy();
+        return;
+    }
+
+
+    conect.query('SELECT userId from tokens where token="' + query.lastNmsg.token + '"', function (err, rows) {
+        var id;
+        //Проверка на ошибку
+        if (err) {
+            console.log("Error ln2");
+            answer.response = "Error ln2";
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+            return;
+        }
+        //Проверка, что такой токен вообще есть
+        if (rows.length === 0) {
+            console.log("Error ln3");
+            answer.response = "Error ln3";
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+            return;
+        }
+        id = rows[0]['userId'];
+        //Выбираем всех друзей из БД
+        conect.query('SELECT senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId='+
+            query.lastNmsg.dialogId +' limit '+ query.lastNmsg.messageCount, function (err2, rows2) {
+            //Проверка на ошибку
+            if (err2) {
+                console.log("Error ln4");
+                answer.response = "Error ln4";
+                sock.write(JSON.stringify(answer));
+                sock.destroy();
+                return;
+            }
+            //Формируем JSON список друзей
+            var messagesList = [];
+            for (var i = 0; i < rows2.length; i++) {
+                var datestr = rows2[i]['datatime'].toString() ;
+                console.log(typeof datestr);
+                messagesList[i] = {
+                    login: rows2[i]['login'],
+                    senderId: rows2[i]['senderId'],
+                    text: rows2[i]['msg'],
+                    datatime: datestr
+                };
+            }
+
+            answer.response = "OK";
+            answer.messages = messagesList;
+            console.log(JSON.stringify(answer));
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+        });
+    });
+
+}
+
 exports.dataH = dataHandler;
