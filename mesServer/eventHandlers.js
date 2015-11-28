@@ -620,8 +620,8 @@ function lastNmsgRequest(sock, conect, query) {
         }
         id = rows[0]['userId'];
         //Выбираем всех друзей из БД
-        conect.query('SELECT messages.id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
-            query.lastNmsg.dialogId + ' limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
+        conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
+            query.lastNmsg.dialogId + ' order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
             //Проверка на ошибку
             if (err2) {
                 console.log("Error ln4");
@@ -636,7 +636,7 @@ function lastNmsgRequest(sock, conect, query) {
                 var datestr = rows2[i]['datatime'].toString();
                 //console.log(typeof datestr);
                 messagesList[i] = {
-                    id: rows2['id'],
+                    id: rows2[i]['id'],
                     login: rows2[i]['login'],
                     senderId: rows2[i]['senderId'],
                     text: rows2[i]['msg'],
@@ -646,6 +646,54 @@ function lastNmsgRequest(sock, conect, query) {
 
             answer.response = "OK";
             answer.messages = messagesList;
+            console.log(answer);
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+        });
+    });
+
+}
+
+function sendMsgRequest(sock, conect, query) {
+    var answer = {response: ""};
+    if (query.sendMsg.token == null || query.sendMsg.dialogId == null || query.sendMsg.msg == null) {
+        answer.response = "Error sm1";
+        sock.write(JSON.stringify(answer));
+        sock.destroy();
+        return;
+    }
+
+    conect.query('SELECT userId from tokens where token="' + query.sendMsg.token + '"', function (err, rows) {
+        var id;
+        //Проверка на ошибку
+        if (err) {
+            console.log("Error sm2");
+            answer.response = "Error sm2";
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+            return;
+        }
+        //Проверка, что такой токен вообще есть
+        if (rows.length === 0) {
+            console.log("Error sm3");
+            answer.response = "Error sm3";
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+            return;
+        }
+        id = rows[0]['userId'];
+        //Выбираем всех друзей из БД
+        conect.query('INSERT INTO messages (dialogId, senderId, msg) values ('+query.sendMsg.dialogId+','+id+',"'+query.sendMsg.msg+'")', function (err2, rows2) {
+            //Проверка на ошибку
+            if (err2) {
+                console.log("Error sm4");
+                answer.response = "Error sm4";
+                sock.write(JSON.stringify(answer));
+                sock.destroy();
+                return;
+            }
+
+            answer.response = "OK";
             console.log(answer);
             sock.write(JSON.stringify(answer));
             sock.destroy();

@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.messengerpigeon.R;
+import com.example.messengerpigeon.jsonServerRequests.authRequest;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class HistoryListAdapter extends ArrayAdapter<History_Item> {
     int resLayout;
     List<History_Item> listHistItems;
     String str;;
-
+    authRequest authReq=new authRequest();
     public HistoryListAdapter(Context context, int idl, List<History_Item> history_items) {
         super(context, idl, history_items);
 
@@ -32,15 +33,15 @@ public class HistoryListAdapter extends ArrayAdapter<History_Item> {
         TextView nameSender;
         TextView tvTitle;
         TextView lsMess;
-
+        String login=authReq.getMyLogin();
         str=listHistItems.get(position).getName_sender();
-        switch (str){
-            case "qwerty":
-                resLayout=R.layout.item_mess_me;
-                break;
-            default:
-                resLayout=R.layout.item_mess_other;
-                break;
+        if(str.equals(login))
+        {
+            resLayout=R.layout.item_mess_me;
+        }
+        else
+        {
+            resLayout=R.layout.item_mess_other;
         }
 
         View v = View.inflate(context,resLayout,null);
