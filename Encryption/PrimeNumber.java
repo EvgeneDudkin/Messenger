@@ -1,9 +1,15 @@
+/**
+ * Large prime number generator
+ * <p>
+ * Created by Arthur on 26.11.2015.
+ */
+
 import sun.security.util.BitArray;
 
 import java.math.BigInteger;
 import java.util.Random;
 
-public class PrimeNumber {
+public abstract class PrimeNumber {
     private static final BigInteger bigTwo = new BigInteger("2");
     private static final int[] firstPrimeNumbers = new int[]{3, 5, 7, 11, 13, 17, 19, 23, 29
             , 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109
@@ -19,9 +25,9 @@ public class PrimeNumber {
 
     // The expansion in powers of two
     private static boolean[] degreeExpansion(BigInteger a, int length) {
-        boolean[] exp = new boolean[length/2];
+        boolean[] exp = new boolean[length / 2];
 
-        for(int i = length/2 - 1; i >= 0; --i) {
+        for (int i = length / 2 - 1; i >= 0; --i) {
             exp[i] = a.divideAndRemainder(bigTwo)[1].equals(BigInteger.ONE);
             a = a.divide(bigTwo);
         }
@@ -30,16 +36,17 @@ public class PrimeNumber {
     }
 
     // The method of repeated squaring and multiplication
+    // ( = a^t mod m )
     private static BigInteger modularExponentiation(BigInteger num, BigInteger a, BigInteger t, int length) {
+        length = length * 4;
         BigInteger x = BigInteger.ONE;
         boolean[] exp = degreeExpansion(t, length);
 
-        for(int i = length/2 - 1; i >= 0; --i) {
-            if(exp[i]) {
+        for (int i = length / 2 - 1; i >= 0; --i) {
+            if (exp[i]) {
                 x = x.multiply(a).divideAndRemainder(num)[1];
                 a = a.multiply(a).divideAndRemainder(num)[1];
-            }
-            else {
+            } else {
                 a = a.multiply(a).divideAndRemainder(num)[1];
             }
         }

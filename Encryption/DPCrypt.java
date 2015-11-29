@@ -1,10 +1,11 @@
-import java.util.Random;
-
 /**
  * Double permutation encrypt (decrypt)
- *
+ * <p>
  * Created by Arthur on 26.11.2015.
  */
+
+import java.util.Random;
+
 public abstract class DPCrypt {
     // Key1: Number of rows
     private static int key1;
@@ -23,17 +24,19 @@ public abstract class DPCrypt {
         return random_key3;
     }
 
+    // Converts string to char array
+    // (Encryption)
     private static char[][] stringToCharArrayEnc(String str) {
         char[][] buffer = new char[key1][key2];
 
         for (int i = 0; i < str.length(); i++) {
-            if(i == key1 * key2) {
+            if (i == key1 * key2) {
                 break;
             }
             buffer[i % key1][i / key1] = str.charAt(i);
         }
 
-        if(str.length() < key1*key2) {
+        if (str.length() < key1 * key2) {
             for (int i = str.length(); i < key1 * key2; ++i) {
                 buffer[i % key1][key2 - 1] = ' ';
             }
@@ -42,17 +45,19 @@ public abstract class DPCrypt {
         return buffer;
     }
 
+    // Converts string to char array
+    // (Decryption)
     private static char[][] stringToCharArrayDec(String str) {
         char[][] buffer = new char[key2][key1];
 
         for (int i = 0; i < str.length(); i++) {
-            if(i == key2 * key1) {
+            if (i == key2 * key1) {
                 break;
             }
             buffer[i % key2][i / key2] = str.charAt(i);
         }
 
-        if(str.length() < key1*key2) {
+        if (str.length() < key1 * key2) {
             for (int i = str.length(); i < key1 * key2; ++i) {
                 buffer[i % key2][key1 - 1] = ' ';
             }
@@ -61,6 +66,8 @@ public abstract class DPCrypt {
         return buffer;
     }
 
+    // Change the order of columns
+    // (Encrypt)
     private static char[][] permutationTableEnc(char[][] chartable) {
         for (int i = 0; i < chartable.length; ++i) {
             char[] row = chartable[i];
@@ -73,15 +80,18 @@ public abstract class DPCrypt {
         return chartable;
     }
 
+    // Change the order of rows
+    // (Decrypt)
     private static char[][] permutationTableDec(char[][] chartable) {
-        for(int i = key3.length - 1; i >= 0; --i) {
+        for (int i = key3.length - 1; i >= 0; --i) {
             String tmp = new String(chartable[i]);
-            chartable[i] =  new String(chartable[key3[i]]).toCharArray();
+            chartable[i] = new String(chartable[key3[i]]).toCharArray();
             chartable[key3[i]] = tmp.toCharArray();
         }
         return chartable;
     }
 
+    // Convert char table to string
     private static String charTableToString(char[][] char_table) {
         String buffer = "";
 
@@ -93,7 +103,7 @@ public abstract class DPCrypt {
     }
 
     // Encrypt string
-    public static String Encrypt (String str, int key1_, int key2_, int[] key3_) {
+    public static String Encrypt(String str, int key1_, int key2_, int[] key3_) {
         key1 = key1_;
         key2 = key2_;
         key3 = key3_;
@@ -105,7 +115,7 @@ public abstract class DPCrypt {
     }
 
     // Decrypt string
-    public static String Decrypt (String str, int key1_, int key2_, int[] key3_) {
+    public static String Decrypt(String str, int key1_, int key2_, int[] key3_) {
         key1 = key1_;
         key2 = key2_;
         key3 = key3_;
