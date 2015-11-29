@@ -5,7 +5,7 @@ import java.util.Random;
  *
  * Created by Arthur on 26.11.2015.
  */
-public class DPCrypt {
+public abstract class DPCrypt {
     // Key1: Number of rows
     private static int key1;
     // Key2: Number of columns
@@ -13,55 +13,14 @@ public class DPCrypt {
     // Key3: Permutations
     private static int[] key3;
 
-    DPCrypt() {
-        key1 = 5;
-        key2 = 5;
-        key3 = new int[] {4, 3, 2, 1, 0};
-    }
-
-    DPCrypt(int xkey1, int xkey2) {
-        key1 = xkey1;
-        key2 = xkey2;
-        key3 = new int[] {4, 3, 2, 1, 0};
-    }
-
-    DPCrypt(int xkey1, int xkey2, int[] xkey3) {
-        key1 = xkey1;
-        key2 = xkey2;
-        key3 = xkey3;
-    }
-
-    public void setKey1(int key) {
-        key1 = key;
-    }
-
-    public void setKey2(int key) {
-        key2 = key;
-    }
-
-    public void setKey3(int[] key) {
-        key3 = key;
-    }
-
-    public int getKey1() {
-        return key1;
-    }
-
-    public int getKey2() {
-        return key2;
-    }
-
-    public int[] getKey3() {
-        return key3;
-    }
-
     // Generate random key3
-    public void generateKey3() {
-        key3 = new int[key2];
+    public static int[] generateKey3(int key2_) {
+        int[] random_key3 = new int[key2_];
         Random rnd = new Random();
-        for (int i = 0; i < key2; ++i) {
-            key3[i] = rnd.nextInt(key2);
+        for (int i = 0; i < key2_; ++i) {
+            random_key3[i] = rnd.nextInt(key2_);
         }
+        return random_key3;
     }
 
     private static char[][] stringToCharArrayEnc(String str) {
@@ -134,7 +93,10 @@ public class DPCrypt {
     }
 
     // Encrypt string
-    public static String Encrypt (String str) {
+    public static String Encrypt (String str, int key1_, int key2_, int[] key3_) {
+        key1 = key1_;
+        key2 = key2_;
+        key3 = key3_;
         char[][] chartable;
         chartable = stringToCharArrayEnc(str);
         chartable = permutationTableEnc(chartable);
@@ -143,7 +105,10 @@ public class DPCrypt {
     }
 
     // Decrypt string
-    public static String Decrypt (String str) {
+    public static String Decrypt (String str, int key1_, int key2_, int[] key3_) {
+        key1 = key1_;
+        key2 = key2_;
+        key3 = key3_;
         char[][] chartable;
         chartable = stringToCharArrayDec(str);
         chartable = permutationTableDec(chartable);
@@ -152,7 +117,7 @@ public class DPCrypt {
         while (chartable[key2 - 1][i % key1] == ' ') {
             chartable[key2 - 1][i % key1] = '\0';
             i--;
-            if (i == 0)
+            if (i == -1)
                 break;
         }
 
