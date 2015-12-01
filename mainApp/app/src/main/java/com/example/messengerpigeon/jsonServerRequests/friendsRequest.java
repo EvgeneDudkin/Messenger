@@ -20,7 +20,7 @@ public class friendsRequest extends jsonServerRequests {
     /**
      * Список друзей
      */
-    public static friend[] friends = null;
+    public  friend[] friends = null;
 
 
     /**
@@ -106,7 +106,7 @@ public class friendsRequest extends jsonServerRequests {
      * Геттер списка друзей
      * @return список друзей
      */
-    public static friend[] getListFriends() {
+    public  friend[] getListFriends() {
         return friends;
     }
 

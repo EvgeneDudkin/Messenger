@@ -9,17 +9,19 @@
     <EditText
         android:layout_width="194dp"
         android:layout_height="54dp"
-        android:id="@+id/editText" />
+        android:id="@+id/editText_search" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="104dp"
-        android:layout_height="wrap_content"
+        android:layout_width="155dp"
+        android:layout_height="50dp"
         android:text="Поиск"
-        android:id="@+id/button"
-        android:layout_gravity="right"
+        android:id="@+id/button_search"
+        android:layout_gravity="left"
         android:enabled="true"
-        android:elegantTextHeight="false" />
+        android:elegantTextHeight="false"
+        android:background="@drawable/round_corner"
+        android:textColor="@color/colorWhite"/>
 
     <ListView
         android:id="@+id/list_friends"
