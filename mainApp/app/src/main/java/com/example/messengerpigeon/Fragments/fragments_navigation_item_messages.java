@@ -1,5 +1,6 @@
 package com.example.messengerpigeon.Fragments;
 
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -61,7 +62,11 @@ public class fragments_navigation_item_messages extends Fragment {
 
         listFragmentMess = new ArrayList<Fragment>();
         for (int i = 0; i < countDialog; i++) {
-            listFragmentMess.add(new fragments_messages_item());
+            Bundle arg=new Bundle();
+            arg.putByte("dialogId", (byte) dialog[i].Id);
+            fragments_messages_item it=new fragments_messages_item();
+            it.setArguments(arg);
+            listFragmentMess.add(it);
         }
 
 

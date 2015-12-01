@@ -36,12 +36,15 @@ public class fragments_messages_item extends Fragment {
     List<Fragment> listFragmentHistory;
     List<History_Item> listHistoryItem;
     private Button button_send;
+    private String dialogID="";
     authRequest authReq= new authRequest();
     View vv=null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        Bundle arg=this.getArguments();
         vv = inflater.inflate(R.layout.fragment_dialog, container, false);
+        dialogID= String.valueOf(arg.getByte("dialogId"));
 
         listViewHistory=(ListView)vv.findViewById(R.id.list_history);
         listHistoryItem=new ArrayList<History_Item>();
@@ -49,7 +52,7 @@ public class fragments_messages_item extends Fragment {
         button_send.setOnClickListener(onClickListenermain);
 
         AuthTask at = new AuthTask();
-        at.execute("list",authReq.getToken(), "1","20");
+        at.execute("list",authReq.getToken(), dialogID,"5");
         return vv;
     }
     View.OnClickListener onClickListenermain = new View.OnClickListener(){
@@ -59,7 +62,7 @@ public class fragments_messages_item extends Fragment {
                 case R.id.button_send:
                     AuthTask at = new AuthTask();
                     EditText tt=(EditText)vv.findViewById(R.id.text_Send);
-                    at.execute("send",authReq.getToken(),"1",tt.getText().toString());
+                    at.execute("send",authReq.getToken(),dialogID,tt.getText().toString());
                     tt.setText("");
             }
         }
@@ -86,8 +89,8 @@ public class fragments_messages_item extends Fragment {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
 
-                    for (int i = mess.length-1; i >= 0; i++) {
-                        listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, "time"));
+                    for (int i = mess.length-1; i >= 0; i--) {
+                        listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString()));
                     }
                     HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
 
