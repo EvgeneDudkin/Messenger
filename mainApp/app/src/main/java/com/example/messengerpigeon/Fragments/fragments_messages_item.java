@@ -141,7 +141,7 @@ public class fragments_messages_item extends Fragment {
             try {
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
-                dos.writeUTF(text);
+                dos.write(text.getBytes(),0,text.length());
                 System.out.println(text);
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());

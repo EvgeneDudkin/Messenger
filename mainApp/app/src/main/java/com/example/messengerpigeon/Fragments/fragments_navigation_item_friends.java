@@ -137,9 +137,10 @@ public class fragments_navigation_item_friends extends Fragment{
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
+
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
-                dos.writeUTF(text);
+                dos.write(text.getBytes(),0,text.length());
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 

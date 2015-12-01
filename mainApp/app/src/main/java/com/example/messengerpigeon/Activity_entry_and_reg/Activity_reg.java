@@ -184,7 +184,7 @@ public class Activity_reg extends AppCompatActivity{
             try {
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
-                dos.writeUTF(text);
+                dos.write(text.getBytes(),0,text.length());
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
