@@ -61,6 +61,7 @@ public class messageRequest extends jsonServerRequests {
         req.put("dialogId", dialogId);
         req.put("msg", msg);
         obj.put("sendMsg", req);
+        System.out.println(token + ", " + dialogId + ", " + msg);
         msgSendRequest = obj.toString();
         jsonRequest = obj;
     }

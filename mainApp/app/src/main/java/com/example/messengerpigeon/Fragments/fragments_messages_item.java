@@ -122,6 +122,7 @@ public class fragments_messages_item extends Fragment {
                 if(data[0].equals("send")) {
                     sendMsgReq=new messageRequest();
                     sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
+                    System.out.println(data[1]+", "+Integer.parseInt(data[2])+", "+data[3]);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     System.out.println(serverAddr);
                     socket = new Socket(serverAddr, serverInfo.getPort());
@@ -141,6 +142,7 @@ public class fragments_messages_item extends Fragment {
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
                 dos.writeUTF(text);
+                System.out.println(text);
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
