@@ -59,6 +59,9 @@ function dataHandler(data, sock, conect) {
     else if (query.lastNmsg != null) {
         lastNmsgRequest(sock, conect, query);
     }
+	else if (query.userInfo != null) {
+		getUserInfo(sock, conect, query);
+	}
     else {
         var answer = {response: "Error 2"};
         sock.write(JSON.stringify(answer));
@@ -543,7 +546,7 @@ function friendsSearchRequest(sock, conect, query) {
         return;
     }
     //Выбираем из списка токенов нужный id
-    conect.query('SELECT userId from tokens where token="' + query.friendsL.token + '"', function (err, rows) {
+    conect.query('SELECT userId from tokens where token="' + query.friendsS.token + '"', function (err, rows) {
         var id;
         //Проверка на ошибку
         if (err) {
@@ -561,9 +564,10 @@ function friendsSearchRequest(sock, conect, query) {
         }
         id = rows[0]['userId'];
         //Выбираем всех друзей из БД
-        conect.query('select id, login, firstName, lastName from users where (login REGEXP "' + query.friendsS.searchPattern + '") = 1 ' +
+		/*' +
             'and not exists(select * from friendrequests where reqStatus=1 and (idSender=id and idRecipient=' + id + ') ' +
-            'or (idRecipient=id and idSender=' + id + ')))', function (err2, rows2) {
+            'or (idRecipient=id and idSender=' + id + ')))*/
+        conect.query('select id, login, firstName, lastName from users where (login REGEXP "' + query.friendsS.searchPattern + '") = 1 and not(id = '+id+')', function (err2, rows2) {
             //Проверка на ошибку
             if (err2) {
                 answer.response = "Error fs4";
@@ -599,6 +603,7 @@ function lastNmsgRequest(sock, conect, query) {
         return;
     }
 
+	
 
     conect.query('SELECT userId from tokens where token="' + query.lastNmsg.token + '"', function (err, rows) {
         var id;
@@ -620,8 +625,9 @@ function lastNmsgRequest(sock, conect, query) {
         }
         id = rows[0]['userId'];
         //Выбираем всех друзей из БД
+		if(query.lastNmsg.dateStart != null) {
         conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
-            query.lastNmsg.dialogId + ' order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
+            query.lastNmsg.dialogId + ' and datatime >  order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
             //Проверка на ошибку
             if (err2) {
                 console.log("Error ln4");
@@ -633,7 +639,7 @@ function lastNmsgRequest(sock, conect, query) {
             //Формируем JSON список друзей
             var messagesList = [];
             for (var i = 0; i < rows2.length; i++) {
-                var datestr = rows2[i]['datatime'].toString();
+                var datestr = rows2[i]['datatime'].toString().substring(0, 33);
                 //console.log(typeof datestr);
                 messagesList[i] = {
                     id: rows2[i]['id'],
@@ -650,6 +656,42 @@ function lastNmsgRequest(sock, conect, query) {
             sock.write(JSON.stringify(answer));
             sock.destroy();
         });
+		}
+		else if(query.lastNmsg.idStart != null) {
+			
+		}
+		else {
+        conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
+            query.lastNmsg.dialogId + ' order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
+            //Проверка на ошибку
+            if (err2) {
+                console.log("Error ln4");
+                answer.response = "Error ln4";
+                sock.write(JSON.stringify(answer));
+                sock.destroy();
+                return;
+            }
+            //Формируем JSON список друзей
+            var messagesList = [];
+            for (var i = 0; i < rows2.length; i++) {
+                var datestr = rows2[i]['datatime'].toString().substring(0, 33);
+                //console.log(typeof datestr);
+                messagesList[i] = {
+                    id: rows2[i]['id'],
+                    login: rows2[i]['login'],
+                    senderId: rows2[i]['senderId'],
+                    text: rows2[i]['msg'],
+                    datatime: datestr
+                };
+            }
+
+            answer.response = "OK";
+            answer.messages = messagesList;
+            console.log(answer);
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+        });
+		}
     });
 
 }
@@ -700,6 +742,50 @@ function sendMsgRequest(sock, conect, query) {
         });
     });
 
+}
+
+function getUserInfo(sock, conect, query) {
+	var answer = {response: "", user: null};
+	if(query.userInfo.token == null) {
+        answer.response = "Error ui1";
+        sock.write(JSON.stringify(answer));
+        sock.destroy();
+        return;
+	}
+	
+	conect.query('SELECT userId from tokens where token="' + query.sendMsg.token + '"', function (err, rows) {
+        var id;
+        //Проверка на ошибку
+        if (err) {
+            answer.response = "Error ui2";
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+            return;
+        }
+        //Проверка, что такой токен вообще есть
+        if (rows.length === 0) {
+            answer.response = "Error ui3";
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+            return;
+        }
+        id = rows[0]['userId'];
+        //Выбираем всех друзей из БД
+        conect.query('select login, firstName, lastName from users where id = ' + id, function (err2, rows2) {
+            //Проверка на ошибку
+            if (err2) {
+                answer.response = "Error ui4";
+                sock.write(JSON.stringify(answer));
+                sock.destroy();
+                return;
+            }
+
+            answer.response = "OK";
+			answer.user = {id: id, username: rows2['login'], fName: rows2['firstName'], lName: rows2['lastName']}
+            sock.write(JSON.stringify(answer));
+            sock.destroy();
+        });
+    });
 }
 
 exports.dataH = dataHandler;
