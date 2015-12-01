@@ -207,8 +207,8 @@
 				{
 				token: "%token%",
 				dialogId: %dialogId%,
-				numberMsg: %numberMsg,
-				dataStart: "%dataStart%"
+				messageCount: %messageCount,
+				dateStart: "%dataStart%"
 				}
 			}
 			or
@@ -218,7 +218,7 @@
 				token: "%token%",
 				dialogId: %dialogId%,
 				numberMsg: %numberMsg,
-				idStart: %idStart%
+				idStart: %idStart%	
 				}
 			}
 		%token% - идентификатор пользователя
@@ -231,5 +231,26 @@
 		JSON:
 		
 			
+Запрос информации о пользователе:
+	json request:
+		{
+		getUserInfo:
+			{
+			token: %token%
+			}
+		}
+	
+	response:
+		{
+		response: %response%,
+		user: 
+			{
+			id: id,
+			username: "ad",
+			fName: "fName",
+			lName: "lName",
+			avatar: //????????????????????????????????????
+			}
+		}
 		
 			
