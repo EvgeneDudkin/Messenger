@@ -4,57 +4,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-
-    <ListView
+        <ListView
             android:id="@+id/list_history"
             android:layout_width="match_parent"
-            android:layout_height="453dp"
+            android:layout_height="match_parent"
             android:background="@color/colorWhite"
             android:choiceMode="singleChoice"
             android:divider="@color/colorWhite"
-            android:dividerHeight="0dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="1">
+            android:dividerHeight="0dp"
+            android:layout_weight="0.15"/>
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="1">
-        <EditText
-            android:id="@+id/text_Send"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/round_corner_text"
-            android:hint="сообщение"
-            android:fitsSystemWindows="true"
-            android:clickable="true"
-            android:inputType="text"
-            android:editable="true"
-            android:enabled="true"
-            android:focusable="true"
-            android:contextClickable="true"
-            android:focusableInTouchMode="true"
-            android:longClickable="false"
-            android:textIsSelectable="true"
-            android:layout_weight="0.93" />
-        <Button
-            android:layout_width="98dp"
-            android:layout_height="match_parent"
-            android:text="@string/str_button_send"
-            android:id="@+id/button_send"
-            android:background="@drawable/round_corner"
-            android:textColor="@color/colorWhite"/>
+            android:layout_weight="0.9">
+
+            <EditText
+                android:id="@+id/text_Send"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/round_corner_text"
+                android:hint="Введите сообщение"
+                android:fitsSystemWindows="true"
+                android:layout_weight="0.3"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/str_button_send"
+                android:id="@+id/button_send"
+                android:background="@drawable/round_corner"
+                android:textColor="@color/colorWhite"
+                android:layout_weight="0.7"/>
         </LinearLayout>
 
 
-
-
-
-    </LinearLayout>
 </LinearLayout>

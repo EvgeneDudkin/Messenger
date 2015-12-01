@@ -1,11 +1,17 @@
 package com.example.messengerpigeon.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
+import android.hardware.input.InputManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.FocusFinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -27,6 +33,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by egor on 20.11.2015.
@@ -47,23 +54,31 @@ public class fragments_messages_item extends Fragment {
         dialogID= String.valueOf(arg.getByte("dialogId"));
 
         listViewHistory=(ListView)vv.findViewById(R.id.list_history);
+        listViewHistory.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        listViewHistory.setStackFromBottom(true);
         listHistoryItem=new ArrayList<History_Item>();
         button_send=(Button)vv.findViewById(R.id.button_send);
         button_send.setOnClickListener(onClickListenermain);
 
         AuthTask at = new AuthTask();
-        at.execute("list",authReq.getToken(), dialogID,"5");
+        at.execute("list", authReq.getToken(), dialogID, "10");
         return vv;
     }
     View.OnClickListener onClickListenermain = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.button_send:
-                    AuthTask at = new AuthTask();
-                    EditText tt=(EditText)vv.findViewById(R.id.text_Send);
-                    at.execute("send",authReq.getToken(),dialogID,tt.getText().toString());
-                    tt.setText("");
+            if(v.getId()==R.id.button_send){
+                AuthTask at = new AuthTask();
+                EditText tt=(EditText)vv.findViewById(R.id.text_Send);
+                at.execute("send",authReq.getToken(),dialogID,tt.getText().toString());
+                tt.setText("");
+                //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
+                tt.clearFocus();
+                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            }
+            else{
+                //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
+                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         }
     };
@@ -81,13 +96,12 @@ public class fragments_messages_item extends Fragment {
         @Override
         protected void onPostExecute(final String ret) {
             try {
-
                 System.out.println(ret);
                 messageRequest request=new messageRequest();
                 request.responseHandler(ret);
-                if(request.getRequestType()=="list") {
+                if(Objects.equals(request.getRequestType(), "list")) {
                     message[] mess = listMsgReq.getMessages();
-                    System.out.println(mess);
+                    //System.out.println(mess);
 
                     for (int i = mess.length-1; i >= 0; i--) {
                         listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString()));
@@ -98,7 +112,7 @@ public class fragments_messages_item extends Fragment {
                     listViewHistory.smoothScrollToPosition(mess.length - 1);
                 }
                 else
-                    if(request.getRequestType()=="send")
+                    if(request.getRequestType().equals("send"))
                     {
                         System.out.println(request.getResponse());
                     }
@@ -147,8 +161,9 @@ public class fragments_messages_item extends Fragment {
                 //���� ������ ������.
                 //TODO: ���������� ���
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte buffer[] = new byte[10000000];
+                byte buffer[] = new byte[10000];
                 int s=dis.read(buffer);
+                System.out.println(s );
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
