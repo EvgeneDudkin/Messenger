@@ -105,5 +105,4 @@ public class Activity_Navigation extends AppCompatActivity {
             }
         });
     }
-
 }
