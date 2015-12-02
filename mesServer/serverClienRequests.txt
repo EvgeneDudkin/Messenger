@@ -104,7 +104,7 @@
 	CLient->Server:
 		JSON:
 			{
-				dialogRequest:
+				friendRequest:
 				{
 				token: "%token%",
 				idRecipient: %idRecipient%

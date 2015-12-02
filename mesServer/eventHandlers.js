@@ -7,13 +7,13 @@ var md5 = require('md5'),
 
 function dataHandler(data, sock, conect) {
     data = data.toString();
+    console.log(data);
     for (var i = 0; i < data.length; i++) {
         if (data[i] == '{') {
             data = data.substr(i);
             break;
         }
     }
-    console.log(data);
     try {
         var query = JSON.parse(data);
     }
@@ -115,33 +115,12 @@ function authRequest(sock, conect, query) {
                 //Вставляем токен в базу
                 conect.query('INSERT into tokens (userId, token) values(' + rows[0]['id'] + ', "' + token + '")', function (err3) {
                     //Проверка ошибки
-                    if (!err3) {/*
-                     conect.query('select * from users where ' +
-                     'exists(select * from friendrequests where reqStatus=1 and ' +
-                     '(idSender=id and idRecipient=' + rows[0]['id'] + ') or (idRecipient=id and idSender=' + rows[0]['id'] + '))', function (err4, rows4) {
-                     if (err4) {
-                     answer.response = "Error afl4";
-                     sock.write(JSON.stringify(answer));
-                     sock.destroy();
-                     return;
-                     }
-                     var friendsList = [];
-                     for (var i = 0; i < rows4.length; i++) {
-                     friendsList[i] = {
-                     login: rows4[i]['login'],
-                     id: rows4[i]['id'],
-                     firstName: rows4[i]['firstName'],
-                     lastName: rows4[i]['lastName']
-                     };
-                     }
-                     answer.response = "OK";
-                     answer.friends = friendsList;
-                     sock.write(JSON.stringify(answer));
-                     sock.destroy();
-                     });
-                     */
-                        conect.query('select id, name from dialogs left join userdialog on dialogs.id = userdialog.dialogId where userId = ' + rows[0]['id'], function (err4, rows4) {
+                    if (!err3) {
+                        conect.query('SELECT login, dialogs.id, dialogs.name from dialogs, users, userdialog where '+
+' dialogId = dialogs.id and userId = users.id and ' +
+' exists(select * from userdialog where dialogId = dialogs.id and userId = '+rows[0]['id']+') and not (users.id = '+rows[0]['id']+')', function (err4, rows4) {
                             if (err4) {
+								console.log(err4);
                                 answer.response = "Error adl4";
                                 sock.write(JSON.stringify(answer));
                                 sock.destroy();
@@ -151,7 +130,8 @@ function authRequest(sock, conect, query) {
                             for (var i = 0; i < rows4.length; i++) {
                                 dialogsList[i] = {
                                     id: rows4[i]['id'],
-                                    name: rows4[i]['name']
+                                    name: rows4[i]['name'],
+									login: rows4[i]['login']
                                 };
                             }
                             answer.response = "OK";
@@ -304,9 +284,7 @@ function friendsListRequest(sock, conect, query) {
         }
         id = rows[0]['userId'];
         //Выбираем всех друзей из БД
-        conect.query('select * from users where ' +
-            'exists(select * from friendrequests where reqStatus=1 and (idSender=id and idRecipient=' + id + ') ' +
-            'or (idRecipient=id and idSender=' + id + '))', function (err2, rows2) {
+        conect.query('call proc_friendList('+id+')', function (err2, rows2) {
             //Проверка на ошибку
             if (err2) {
                 answer.response = "Error fl4";
@@ -316,12 +294,13 @@ function friendsListRequest(sock, conect, query) {
             }
             //Формируем JSON список друзей
             var friendsList = [];
-            for (var i = 0; i < rows2.length; i++) {
+            for (var i = 0; i < rows2[0].length; i++) {
                 friendsList[i] = {
-                    login: rows2[i]['login'],
-                    id: rows2[i]['id'],
-                    firstName: rows2[i]['firstName'],
-                    lastName: rows2[i]['lastName']
+                    login: rows2[0][i]['login'],
+                    id: rows2[0][i]['id'],
+                    firstName: rows2[0][i]['firstName'],
+                    lastName: rows2[0][i]['lastName'],
+                    reqStatus: rows2[0][i]['req']
                 };
             }
             answer.response = "OK";
@@ -436,29 +415,34 @@ function dialogsListRequest(sock, conect, query) {
             return;
         }
 
-        //TODO: exists VS just where VS join ?!??!?!
+        //TODO: exists VS where VS join ?!??!?!
         //Собственно сама выборка диалогов
-        conect.query('SELECT * FROM dialogs where exists(SELECT * FROM userdialog where userId = ' + rows[0]['userId'] + ' and dialogId = id)', function (err2, rows2) {
+        conect.query('SELECT login, dialogs.id, dialogs.name from dialogs, users, userdialog where '+
+'dialogId = dialogs.id and userId = users.id and' +
+'exists(select * from userdialog where dialogId = dialogs.id and userId = '+id+') and not (users.id = '+id+')', function (err2, rows2) {
             if (err2) {
                 answer.response = "Error dl4";
                 sock.write(JSON.stringify(answer));
                 sock.destroy();
                 return;
             }
-            var dialogsList = [];
+			var dialogsList = [];
             for (var i = 0; i < rows2.length; i++) {
                 dialogsList[i] = {
                     id: rows2[i]['id'],
-                    name: rows2[i]['name']
+                    name: rows2[i]['name'],
+					login: rows2[i]['login']
                 };
             }
             answer.response = "OK";
             answer.dialogs = dialogsList;
             sock.write(JSON.stringify(answer));
             sock.destroy();
+					
+					});
+            
         });
-    });
-}
+    }
 
 //Создание диалога
 function dialogCreateRequest(sock, conect, query) {
@@ -567,7 +551,7 @@ function friendsSearchRequest(sock, conect, query) {
 		/*' +
             'and not exists(select * from friendrequests where reqStatus=1 and (idSender=id and idRecipient=' + id + ') ' +
             'or (idRecipient=id and idSender=' + id + ')))*/
-        conect.query('select id, login, firstName, lastName from users where (login REGEXP "' + query.friendsS.searchPattern + '") = 1 and not(id = '+id+')', function (err2, rows2) {
+        conect.query('call proc_friendSearch('+id+', "'+query.friendsS.searchPattern+'")', function (err2, rows2) {
             //Проверка на ошибку
             if (err2) {
                 answer.response = "Error fs4";
@@ -577,12 +561,13 @@ function friendsSearchRequest(sock, conect, query) {
             }
             //Формируем JSON список друзей
             var friendsList = [];
-            for (var i = 0; i < rows2.length; i++) {
+            for (var i = 0; i < rows2[0].length; i++) {
                 friendsList[i] = {
-                    login: rows2[i]['login'],
-                    id: rows2[i]['id'],
-                    firstName: rows2[i]['firstName'],
-                    lastName: rows2[i]['lastName']
+                    login: rows2[0][i]['login'],
+                    id: rows2[0][i]['id'],
+                    firstName: rows2[0][i]['firstName'],
+                    lastName: rows2[0][i]['lastName'],
+                    reqStatus: rows2[0][i]['req']
                 };
             }
             answer.response = "OK";
