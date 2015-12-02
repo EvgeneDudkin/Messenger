@@ -62,18 +62,19 @@ public class fragments_messages_item extends Fragment {
     View.OnClickListener onClickListenermain = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
-            if(v.getId()==R.id.button_send){
+            if(v.getId()==R.id.button_send) {
                 AuthTask at = new AuthTask();
-                EditText tt=(EditText)vv.findViewById(R.id.text_Send);
-                at.execute("send",authReq.getToken(),dialogID,tt.getText().toString());
-                tt.setText("");
-                //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
-                tt.clearFocus();
-                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                EditText tt = (EditText) vv.findViewById(R.id.text_Send);
+                if (!tt.getText().toString().equals("")) {
+                    at.execute("send", authReq.getToken(), dialogID, tt.getText().toString());
+                    tt.setText("");
+                    //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
+                    tt.clearFocus();
+                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                } else {
+                    //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
+                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                 }
-            else{
-                //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
-                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         }
     };
