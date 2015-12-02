@@ -146,14 +146,18 @@ public class fragments_messages_item extends Fragment {
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
-                //���� ������ ������.
-                //TODO: ���������� ���
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte buffer[] = new byte[10000000];
-                int s=dis.read(buffer);
-                baos.write(buffer, 0, s);
-                byte result[] = baos.toByteArray();
-                return new String(result, "UTF-8");
+                byte buffer[] = new byte[1024];
+                String ret = "";
+                int ss = dis.read(buffer);
+
+                while(ss != -1) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    baos.write(buffer, 0, ss);
+                    byte result[] = baos.toByteArray();
+                    ret += new String(result, "UTF-8");
+                    ss = dis.read(buffer);
+                }
+                return ret;
 
             } catch (Exception e) {
                 e.printStackTrace();
