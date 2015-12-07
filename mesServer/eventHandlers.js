@@ -4,6 +4,8 @@
 var crypto = require('crypto');
 var md5 = require('md5'),
     getToken = require('./token.js').createToken;
+var encrypt = require('./DPcrypt').encrypt;
+var decrypt = require('./DPcrypt').decrypt;
 
 function dataHandler(data, sock, conect) {
     data = data.toString();
@@ -16,8 +18,21 @@ function dataHandler(data, sock, conect) {
     }
     try {
         var query = JSON.parse(data);
+        if(query.query != null) {
+            console.log(query.query);
+            var str = decrypt(query.query).trim();
+            for (var i = str.length-1; i >= 0 ; i--) {
+                if (str[i] == '}') {
+                    str = str.substr(0, i+1);
+                    break;
+                }
+            }
+            console.log(str);
+            query = JSON.parse(str);
+        }
     }
     catch (err) {
+        console.log(err);
         sock.write("Error 1");
         sock.destroy();
         return;
@@ -320,7 +335,7 @@ function friendRequest(sock, conect, query) {
         sock.destroy();
     }
 
-    conect.query('SELECT userId from tokens where token="' + query.friendsL.token + '"', function (err, rows) {
+    conect.query('SELECT userId from tokens where token="' + query.friendRequest.token + '"', function (err, rows) {
         var id;
         //Проверка на ошибку
         if (err) {
@@ -643,7 +658,36 @@ function lastNmsgRequest(sock, conect, query) {
         });
 		}
 		else if(query.lastNmsg.idStart != null) {
-			
+          conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
+             query.lastNmsg.dialogId + ' and messages.id < '+query.lastNmsg.idStart+'  order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
+              //Проверка на ошибку
+              if (err2) {
+                  console.log("Error ln4");
+                  answer.response = "Error ln4";
+                  sock.write(JSON.stringify(answer));
+                  sock.destroy();
+                  return;
+              }
+              //Формируем JSON список друзей
+              var messagesList = [];
+              for (var i = 0; i < rows2.length; i++) {
+                  var datestr = rows2[i]['datatime'].toString().substring(0, 33);
+                  //console.log(typeof datestr);
+                  messagesList[i] = {
+                      id: rows2[i]['id'],
+                      login: rows2[i]['login'],
+                      senderId: rows2[i]['senderId'],
+                      text: rows2[i]['msg'],
+                      datatime: datestr
+                  };
+              }
+
+              answer.response = "OK";
+              answer.messages = messagesList;
+              console.log(answer);
+              sock.write(JSON.stringify(answer));
+              sock.destroy();
+          });
 		}
 		else {
         conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +

@@ -6,24 +6,40 @@ var mconnection = mysqlConnection.connection;
 var dataH = eventHandlers.dataH;
 
 
-var HOST = '192.168.0.101';
-var PORT = 3000;
+var HOST = '172.20.205.88';
+var PORT = 3001;
 
 //Создаем экземпляр сервера
 //Функция внутри - обработчик события 'connection' (то есть, когда к серверу осуществляется подключение)
 var server = net.createServer(function(sock) {
     var bDATA = false;
-
+    var stop = null;
+    var length = 0;
+    var str = "";
 
     //Отчет, о том что кто-то приконектился
     console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
-    var stop = null;
-    //Обработчик события 'data'. То есть клиент передает какие-то данные
+    //Обработчик собтия 'data'. То есть клиент передает какие-то данные
     sock.on('data', function(data) {
-        dataH(data.toString(),sock,mconnection);
-
+        if(bDATA) {
+            console.log(data.toString());
+            str += data.toString();
+            if(str.length >= length) {
+                dataH(str,sock,mconnection);
+            }
+        }
+        else {
+            console.log(data);
+            length = parseInt(data.toString());
+            console.log(length);
+        }
         bDATA = true;
     });
+    /*sock.on('data', function(data) {
+                dataH(data.toString(),sock,mconnection);
+        bDATA = true;
+    });*/
+
     //Обработчик события 'close'. То есть, когда клиент закрыл соединение
     sock.on('close', function(data) {
         console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
