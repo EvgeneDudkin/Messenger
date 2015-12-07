@@ -56,7 +56,7 @@ public class fragments_messages_item extends Fragment {
         button_send.setOnClickListener(onClickListenermain);
 
         AuthTask at = new AuthTask();
-        at.execute("list",authReq.getToken(), dialogID,"15");
+        at.execute("list",authReq.getToken(), dialogID,"1000");
         return vv;
     }
     View.OnClickListener onClickListenermain = new View.OnClickListener(){

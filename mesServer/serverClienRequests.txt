@@ -229,7 +229,16 @@
 		
 	Server->Client:
 		JSON:
-		
+			{
+			response: %%,
+			messages: [
+					idMessages: %%,
+					login:,
+					senderId,
+					text:,
+					datatime:
+				]
+			}
 			
 Запрос информации о пользователе:
 	json request:
