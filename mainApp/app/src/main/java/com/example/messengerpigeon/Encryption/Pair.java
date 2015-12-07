@@ -9,7 +9,7 @@ public class Pair {
     public BigInteger x;
     public BigInteger y;
 
-    Pair() {
+    public Pair() {
         x = BigInteger.ZERO;
         y = BigInteger.ZERO;
     }

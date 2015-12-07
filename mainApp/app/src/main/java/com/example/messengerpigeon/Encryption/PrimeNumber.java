@@ -6,8 +6,6 @@
 
 package com.example.messengerpigeon.Encryption;
 
-import sun.security.util.BitArray;
-
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -39,7 +37,7 @@ public abstract class PrimeNumber {
 
     // The method of repeated squaring and multiplication
     // ( = a^t mod m )
-    private static BigInteger modularExponentiation(BigInteger num, BigInteger a, BigInteger t, int length) {
+    public static BigInteger modularExponentiation(BigInteger num, BigInteger a, BigInteger t, int length) {
         length = length * 4;
         BigInteger x = BigInteger.ONE;
         boolean[] exp = degreeExpansion(t, length);

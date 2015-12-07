@@ -17,6 +17,7 @@ import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
 import com.example.messengerpigeon.serverInfo;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -163,10 +164,15 @@ public class Activity_entry extends AppCompatActivity{
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
-                DataOutputStream dos = new DataOutputStream(
-                        socket.getOutputStream());
-                dos.write(text.getBytes(),0,text.length());
+                /* !!!
+                jsonCrypt.Send(socket, text);
+                */
+
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                dos.write(text.getBytes(), 0, text.length());
                 dos.flush();
+
+
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 //���� ������ ������.

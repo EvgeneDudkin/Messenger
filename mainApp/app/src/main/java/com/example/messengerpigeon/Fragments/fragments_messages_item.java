@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.messengerpigeon.Encryption.Pair;
+import com.example.messengerpigeon.Encryption.RSACrypt;
 import com.example.messengerpigeon.History.HistoryListAdapter;
 import com.example.messengerpigeon.History.History_Item;
 import com.example.messengerpigeon.LoginPasswordValidator;
@@ -24,6 +26,7 @@ import com.example.messengerpigeon.serverInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -120,6 +123,11 @@ public class fragments_messages_item extends Fragment {
 
         @Override
         protected String doInBackground(String... data) {
+            /* !!!
+            int intlength = 64;
+            Pair publicKey = new Pair();
+            BigInteger privateKey = RSACrypt.generateKeys(publicKey, intlength);
+            */
             try {
                 if(data[0].equals("list")) {
                     listMsgReq=new messageRequest();
@@ -132,8 +140,13 @@ public class fragments_messages_item extends Fragment {
                 else
                 if(data[0].equals("send")) {
                     sendMsgReq=new messageRequest();
+                    /* !!!
+                    String cryptMessage = RSACrypt.Encrypt(data[3],publicKey, intlength);
+                    sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), cryptMessage);
+                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + cryptMessage);
+                    */
                     sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
-                    System.out.println(data[1]+", "+Integer.parseInt(data[2])+", "+data[3]);
+                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     System.out.println(serverAddr);
                     socket = new Socket(serverAddr, serverInfo.getPort());
@@ -152,7 +165,7 @@ public class fragments_messages_item extends Fragment {
             try {
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
-                dos.write(text.getBytes(),0,text.length());
+                dos.write(text.getBytes(), 0, text.length());
                 System.out.println(text);
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
