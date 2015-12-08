@@ -1,15 +1,10 @@
 package com.example.messengerpigeon.Encryption;
 
-import org.json.JSONObject;
-
-import java.io.DataOutputStream;
-import java.net.Socket;
-
 /**
  * Created by Arthur on 07.12.2015.
  */
 public class jsonCrypt {
-    public static void Send(Socket socket, String text)
+   /* public static void Send(Socket socket, String text)
     {
         try {
             String crypt_text = jsonCrypt.Crypt(text);
@@ -50,5 +45,5 @@ public class jsonCrypt {
         }
 
         return new_json.toString();
-    }
+    }*/
 }

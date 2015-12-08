@@ -12,28 +12,25 @@ import android.widget.EditText;
 
 import com.example.messengerpigeon.Activity_Navigation;
 import com.example.messengerpigeon.LoginPasswordValidator;
-import com.example.messengerpigeon.MainActivity;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.userNotFoundException;
 import com.example.messengerpigeon.serverInfo;
-import com.example.messengerpigeon.Encryption.jsonCrypt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Objects;
 
-public class Activity_entry extends AppCompatActivity{
+public class Activity_entry extends AppCompatActivity {
 
     private Toolbar toolbar;
     private Button button_entry;
     private EditText text_login;
     private EditText text_password;
 
-    View focus=null;
+    View focus = null;
 
     LoginPasswordValidator loginPasswordValidator;
 
@@ -44,30 +41,29 @@ public class Activity_entry extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
 
-        button_entry=(Button)findViewById(R.id.button_entry);
+        button_entry = (Button) findViewById(R.id.button_entry);
         button_entry.setOnClickListener(onClickListenermain);
 
-        text_login=(EditText)findViewById(R.id.text_login);
-        text_password=(EditText)findViewById(R.id.text_password);
+        text_login = (EditText) findViewById(R.id.text_login);
+        text_password = (EditText) findViewById(R.id.text_password);
 
         initToolbar();
     }
 
     private void initToolbar() {
-        toolbar=(Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
     }
 
     private boolean checkLogin(String login) {
-        loginPasswordValidator= new LoginPasswordValidator();
-        if(!loginPasswordValidator.validateLogin(login)) {
+        loginPasswordValidator = new LoginPasswordValidator();
+        if (!loginPasswordValidator.validateLogin(login)) {
             if (login.length() < 4) {
                 text_login.setError("Логин должен быть не меньше 4 символов");
-                focus= text_login;
+                focus = text_login;
                 return false;
-            }
-            else{
+            } else {
                 text_login.setError("Логин может состоять только из букв русского, английского алфавита и цифр");
                 focus = text_login;
                 return false;
@@ -93,16 +89,16 @@ public class Activity_entry extends AppCompatActivity{
         return true;
     }
 
-    View.OnClickListener onClickListenermain = new View.OnClickListener(){
+    View.OnClickListener onClickListenermain = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.button_entry:
                     AuthTask at = new AuthTask();
-                    String login=text_login.getText().toString();
-                    String pass=text_password.getText().toString();
+                    String login = text_login.getText().toString();
+                    String pass = text_password.getText().toString();
                     loginPasswordValidator = new LoginPasswordValidator();
-                    if (!checkLogin(login)||!checkPass(pass)) {
+                    if (!checkLogin(login) || !checkPass(pass)) {
                         focus.requestFocus();
                     } else {
                         at.execute(login, pass);
@@ -111,12 +107,13 @@ public class Activity_entry extends AppCompatActivity{
             }
         }
     };
+
     public class AuthTask extends AsyncTask<String, Void, String> {
         private Socket socket = null;
         private authRequest authReq = null;
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             super.onPreExecute();
             authReq = new authRequest();
         }
@@ -130,14 +127,12 @@ public class Activity_entry extends AppCompatActivity{
                 Intent intentEntry = new Intent(Activity_entry.this, Activity_Navigation.class);
                 Activity_entry.this.startActivity(intentEntry);
                 finish();
-            }
-            catch (userNotFoundException e) {
+            } catch (userNotFoundException e) {
                 /*
                 * TODO: ��� ������ ���� ����� ������������ �� ������
                 * */
                 text_login.setError("Пользователь не найден");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 /*
                 * TODO: ���� ����� ������ ������
                 * */
@@ -179,7 +174,7 @@ public class Activity_entry extends AppCompatActivity{
                 //TODO: ���������� ���
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 byte buffer[] = new byte[1024];
-                int s=dis.read(buffer);
+                int s = dis.read(buffer);
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");

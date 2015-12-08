@@ -10,13 +10,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.example.messengerpigeon.Encryption.Pair;
-import com.example.messengerpigeon.Encryption.RSACrypt;
 import com.example.messengerpigeon.History.HistoryListAdapter;
 import com.example.messengerpigeon.History.History_Item;
-import com.example.messengerpigeon.LoginPasswordValidator;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.messageRequest;
@@ -26,12 +22,13 @@ import com.example.messengerpigeon.serverInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+//import com.example.messengerpigeon.Encryption.RSACrypt;
 
 /**
  * Created by egor on 20.11.2015.
