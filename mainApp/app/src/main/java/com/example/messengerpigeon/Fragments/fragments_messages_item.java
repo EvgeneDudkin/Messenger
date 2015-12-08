@@ -10,7 +10,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.messengerpigeon.Encryption.DPCrypt;
 import com.example.messengerpigeon.Encryption.Pair;
@@ -18,7 +17,6 @@ import com.example.messengerpigeon.Encryption.RSACrypt;
 import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.History.HistoryListAdapter;
 import com.example.messengerpigeon.History.History_Item;
-import com.example.messengerpigeon.LoginPasswordValidator;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.messageRequest;
@@ -28,12 +26,13 @@ import com.example.messengerpigeon.serverInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+//import com.example.messengerpigeon.Encryption.RSACrypt;
 
 /**
  * Created by egor on 20.11.2015.
@@ -126,13 +125,13 @@ public class fragments_messages_item extends Fragment {
         @Override
         protected String doInBackground(String... data) {
 
+            /*
             Pair publicKey1 = new Pair(new BigInteger("731290067"), new BigInteger("4540687"));
             Pair publicKey2 = new Pair(new BigInteger("959258543"), new BigInteger("4958761"));
             BigInteger privateKey1 = new BigInteger("60210103");
             BigInteger privateKey2 = new BigInteger("907563841");
 
             int intlength = 16;
-            /*
             Pair publicKey = new Pair();
             BigInteger privateKey = RSACrypt.generateKeys(publicKey, intlength);
             System.out.println(publicKey.x.toString() + " " + publicKey.y.toString());

@@ -2,22 +2,19 @@ package com.example.messengerpigeon.Fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.Activity_Navigation;
 import com.example.messengerpigeon.Messages_Item.MessagesListAdapter;
 import com.example.messengerpigeon.Messages_Item.Messages_Item;
 import com.example.messengerpigeon.R;
-import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.friendsRequest;
 import com.example.messengerpigeon.jsonServerRequests.searchFriendRequest;
 import com.example.messengerpigeon.miniClasses.friend;
@@ -31,58 +28,47 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class fragments_navigation_item_friends extends Fragment {
+/**
+ * Created by Пользователь on 07.12.2015.
+ */
+public class fragment_list_outbox_requests extends Fragment {
 
+    private static final int LAYOUT = R.layout.fragment_view_pager_list_out_req;
     ListView listViewFriends;
+    friendsRequest friendsReq = null;
     List<Messages_Item> listFriendsItem;
-    private Button button_search;
-    EditText tt;
-    authRequest authReq = new authRequest();
-    boolean true_false = true;
     List<Fragment> listFragmentFriends;
-    friend[] listFriends;
-    private friendsRequest friendsReq = null;
-    private searchFriendRequest searchFriends = null;
-    int list_friends=0;
+    public friend[] listFriends;
+    private View view;
+    boolean true_false = true;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_friends,
-                container, false);
-        listViewFriends = (ListView) v.findViewById(R.id.list_friends);
-
-        button_search = (Button) v.findViewById(R.id.button_search);
-        button_search.setOnClickListener(onClickListenermain);
-        tt = (EditText) v.findViewById(R.id.editText_search);
-        AuthTask at = new AuthTask();
-        list_friends=0;
-        at.execute("list");
-        return v;
+    public static fragment_list_outbox_requests getInstance() {
+        Bundle args = new Bundle();
+        fragment_list_outbox_requests fragment = new fragment_list_outbox_requests();
+        fragment.setArguments(args);
+        return fragment;
     }
 
-    View.OnClickListener onClickListenermain = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.button_search:
-                    AuthTask at = new AuthTask();
-                    System.out.println(tt.getText().toString());
-                    list_friends=2;
-                    at.execute("search", authReq.getToken(), tt.getText().toString());
-                    tt.setText("");
-            }
-        }
-    };
-    private void initListView(){
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(LAYOUT, container, false);
+
+        listViewFriends = (ListView) view.findViewById(R.id.list_out_req);
+        AuthTask at = new AuthTask();
+        at.execute();
+
+        return view;
+    }
+
+    private void initListView() {
         listFriends = friendsReq.getListFriends();
 
         int l = listFriends.length;
         listFriendsItem = new ArrayList<Messages_Item>();
         if (l == 0) {
             true_false = false;
-            listFriendsItem.add(new Messages_Item("У вас нет друзей", R.drawable.account, ""));
-
+            listFriendsItem.add(new Messages_Item("Нет исходящих запросов", R.drawable.account, ""));
         } else {
             for (int i = 0; i < l; i++) {
                 listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.drawable.account, listFriends[i].Login));
@@ -90,11 +76,12 @@ public class fragments_navigation_item_friends extends Fragment {
         }
         MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getActivity(), R.layout.item_messages, listFriendsItem);
         listViewFriends.setAdapter(messagesListAdapter);
+
         if (l != 0) {
 
             listFragmentFriends = new ArrayList<Fragment>();
             for (int i = 0; i < l; i++) {
-                listFragmentFriends.add(new fragment_profile(listFriends[i],list_friends));
+                listFragmentFriends.add(new fragment_profile(listFriends[i],1));
             }
 
             listViewFriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,12 +96,12 @@ public class fragments_navigation_item_friends extends Fragment {
                 }
             });
         }
-
     }
 
     public class AuthTask extends AsyncTask<String, Void, String> {
         private Socket socket = null;
 
+        private searchFriendRequest searchFriends = null;
 
         @Override
         protected void onPreExecute() {
@@ -123,21 +110,23 @@ public class fragments_navigation_item_friends extends Fragment {
             try {
                 friendsReq = new friendsRequest();
                 searchFriends = new searchFriendRequest();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            System.out.println("1");
+            System.out.println("4");
         }
 
         @Override
         protected void onPostExecute(final String ret) {
             try {
-                friendsReq = new friendsRequest();
                 System.out.println(ret);
-                friendsReq.responseHandler(ret);
                 socket.close();
+                friendsReq = new friendsRequest();
+                friendsReq.responseHandler(ret);
+                System.out.println("q1");
+                System.out.println("q2");
                 initListView();
-
 
             } catch (Exception ignored) {
                 ignored.printStackTrace();
@@ -147,21 +136,13 @@ public class fragments_navigation_item_friends extends Fragment {
         @Override
         protected String doInBackground(String... data) {
             try {
-                if (data[0].equals("list")) {
-                    friendsReq = new friendsRequest();
-                    friendsReq.createRequest("0");
-                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
-                    System.out.println(serverAddr);
-                    socket = new Socket(serverAddr, serverInfo.getPort());
-                    return sendAndListen(friendsReq.get_Request());
-                } else if (data[0].equals("search")) {
-                    searchFriends.createRequest(data[1], data[2]);
-                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
-                    System.out.println(serverAddr);
-                    socket = new Socket(serverAddr, serverInfo.getPort());
-                    return sendAndListen(searchFriends.get_Request());
-                } else
-                    return sendAndListen("");
+                friendsReq = new friendsRequest();
+                friendsReq.createRequest("1");
+                InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                System.out.println(serverAddr);
+                socket = new Socket(serverAddr, serverInfo.getPort());
+                return sendAndListen(friendsReq.get_Request());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return e.getMessage();
@@ -171,15 +152,9 @@ public class fragments_navigation_item_friends extends Fragment {
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
-
-                DataOutputStream dos = new DataOutputStream(
-                        socket.getOutputStream());
-                dos.write(text.getBytes(), 0, text.length());
+                DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                dos.writeUTF(text);
                 dos.flush();
-
-
-                //jsonCrypt.Send(socket, text);
-
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 //���� ������ ������.

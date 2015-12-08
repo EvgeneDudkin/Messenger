@@ -2,19 +2,19 @@ package com.example.messengerpigeon.jsonServerRequests;
 
 import com.example.messengerpigeon.miniClasses.dialog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
 
 /**
- * Дочерний класс, запрос авторизации
+ * Created by Пользователь on 08.12.2015.
  */
-public class authRequest extends jsonServerRequests {
-
+public class listDialogsRequest extends jsonServerRequests {
     /**
-     * Токен, который вернул сервер
-     */
+            * Токен, который вернул сервер
+    */
     private static String token = "";
     /**
      * Список друзей
@@ -24,7 +24,7 @@ public class authRequest extends jsonServerRequests {
     /**
      * Пустой конструктор
      */
-    public authRequest() {
+    public listDialogsRequest() {
 
     }
 
@@ -32,32 +32,24 @@ public class authRequest extends jsonServerRequests {
 
     /**
      * Конструктор
-     * @param login логин
-     * @param pass пароль
      */
-    public authRequest(String login, String pass) throws JSONException {
-        MyLogin=login;
+    public listDialogsRequest(String token) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
-        auth.put("login", login);
-        auth.put("pass", pass);
-        obj.put("auth", auth);
+        auth.put("token", token);
+        obj.put("dialogsL", auth);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
 
     /**
      * Метод создания запроса
-     * @param login логин
-     * @param pass пароль
      */
-    public void createRequest(String login, String pass) throws JSONException {
-        MyLogin=login;
+    public void createRequest(String token) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
-        auth.put("login", login);
-        auth.put("pass", pass);
-        obj.put("auth", auth);
+        auth.put("token", token);
+        obj.put("dialogsL", auth);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
@@ -69,14 +61,13 @@ public class authRequest extends jsonServerRequests {
     public void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
-            token = ret.get("token").toString();
             response = ret.get("response").toString();
             response = Objects.equals(response, "OK") ? response : response.substring(6);
-            /*JSONArray jsonDialogs = ret.getJSONArray("dialogs");
-            /*dialogs = new dialog[jsonDialogs.length()];
+            JSONArray jsonDialogs = ret.getJSONArray("dialogs");
+            dialogs = new dialog[jsonDialogs.length()];
             for (int i = 0; i < jsonDialogs.length(); i++) {
                 dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
-            }*/
+            }
         } catch (Exception ignored) {
             token = "";
             response = "j1";

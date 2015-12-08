@@ -1,7 +1,5 @@
 package com.example.messengerpigeon;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.example.messengerpigeon.Fragments.fragment_list_inbox_requests;
+import com.example.messengerpigeon.Fragments.fragment_list_outbox_requests;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_friends;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_setting;
@@ -26,11 +26,11 @@ import java.util.List;
 
 public class Activity_Navigation extends AppCompatActivity {
 
-    Toolbar toolbar;
+    public static Toolbar toolbar;
     DrawerLayout drawerLayout;
     RelativeLayout drawerPane;
     ListView listViewNavigation;
-
+    public static FragmentManager fragmentManager;
     List<Navigation_Item> listNavigationItems;
     List<Fragment> listFragments;
 
@@ -69,9 +69,11 @@ public class Activity_Navigation extends AppCompatActivity {
         listViewNavigation = (ListView) findViewById(R.id.navigation_list);
 
         listNavigationItems = new ArrayList<Navigation_Item>();
-        listNavigationItems.add(new Navigation_Item("Friends", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("Messages", R.drawable.message));
-        listNavigationItems.add(new Navigation_Item("Settings", R.drawable.settings));
+        listNavigationItems.add(new Navigation_Item("Друзья", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("Исходящие запросы", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("Входящие запросы", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("Сообщения", R.drawable.message));
+        listNavigationItems.add(new Navigation_Item("Настройки", R.drawable.settings));
 
         NavigationListAdapter navigationListAdapter = new NavigationListAdapter(getApplicationContext(),
                 R.layout.item_navigation_list, listNavigationItems);
@@ -79,15 +81,19 @@ public class Activity_Navigation extends AppCompatActivity {
 
         listFragments = new ArrayList<Fragment>();
         listFragments.add(new fragments_navigation_item_friends());
+        listFragments.add(new fragment_list_outbox_requests());
+        listFragments.add(new fragment_list_inbox_requests());
         listFragments.add(new fragments_navigation_item_messages());
         listFragments.add(new fragments_navigation_item_setting());
 
-        //load first fragment as default:
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
 
-        setTitle(listNavigationItems.get(1).getTitle());
-        listViewNavigation.setItemChecked(1, true);
+        //load first fragment as default:
+        //FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(3)).commit();
+
+        toolbar.setTitle(listNavigationItems.get(3).getTitle());
+        listViewNavigation.setItemChecked(3, true);
         drawerLayout.closeDrawer(drawerPane);
 
         //set listener for navigation items:
@@ -95,11 +101,11 @@ public class Activity_Navigation extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //replace the fragment with the selection correspondingly:
-                FragmentManager fragmentManager = getSupportFragmentManager();
+                System.out.println(listNavigationItems.get(position).getTitle());
+                //FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
 
-                setTitle(listNavigationItems.get(position).getTitle());
+                toolbar.setTitle(listNavigationItems.get(position).getTitle());
                 listViewNavigation.setItemChecked(position, true);
                 drawerLayout.closeDrawer(drawerPane);
             }
