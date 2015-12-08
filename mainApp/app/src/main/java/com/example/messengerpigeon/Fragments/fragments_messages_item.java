@@ -45,6 +45,7 @@ public class fragments_messages_item extends Fragment {
     View vv = null;
 
     boolean blueFlag = false;
+    boolean WhiteFlag = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,10 +71,12 @@ public class fragments_messages_item extends Fragment {
                                  int totalItemCount) {
                 //Algorithm to check if the last item is visible or not
                 final int lastItem = totalItemCount - firstVisibleItem;
-                if (lastItem == totalItemCount && totalItemCount != 0) {
-                    // you have reached end of list, load more data
-                    System.out.println("popali");
-                    loadMore();
+                if (!WhiteFlag) {
+                    if (lastItem == totalItemCount && totalItemCount != 0) {
+                        // you have reached end of list, load more data
+                        System.out.println("popali");
+                        loadMore();
+                    }
                 }
             }
 
@@ -138,6 +141,7 @@ public class fragments_messages_item extends Fragment {
                 if (Objects.equals(request.getRequestType(), "list")) {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
+                    WhiteFlag=mess.length==0;
                     if (listHistoryItem.size() != 0) {
                         for (int i = 0; i < mess.length; ++i) {
                             listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
