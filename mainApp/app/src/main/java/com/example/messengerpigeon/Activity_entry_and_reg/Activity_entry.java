@@ -164,9 +164,8 @@ public class Activity_entry extends AppCompatActivity{
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
-                /* !!!
-                jsonCrypt.Send(socket, text);
-                */
+
+                //jsonCrypt.Send(socket, text);
 
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.write(text.getBytes(), 0, text.length());

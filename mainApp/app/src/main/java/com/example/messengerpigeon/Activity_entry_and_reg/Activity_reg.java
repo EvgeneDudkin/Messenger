@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.LoginPasswordValidator;
 import com.example.messengerpigeon.MainActivity;
 import com.example.messengerpigeon.R;
@@ -182,10 +183,14 @@ public class Activity_reg extends AppCompatActivity{
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
+
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
                 dos.write(text.getBytes(),0,text.length());
                 dos.flush();
+
+                //jsonCrypt.Send(socket, text);
+
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 //���� ������ ������.

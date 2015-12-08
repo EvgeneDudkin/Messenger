@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.messengerpigeon.Encryption.DPCrypt;
 import com.example.messengerpigeon.Encryption.Pair;
 import com.example.messengerpigeon.Encryption.RSACrypt;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.History.HistoryListAdapter;
 import com.example.messengerpigeon.History.History_Item;
 import com.example.messengerpigeon.LoginPasswordValidator;
@@ -60,7 +61,7 @@ public class fragments_messages_item extends Fragment {
         button_send.setOnClickListener(onClickListenermain);
 
         AuthTask at = new AuthTask();
-        at.execute("list",authReq.getToken(), dialogID,"1000");
+        at.execute("list",authReq.getToken(), dialogID,"15");
         return vv;
     }
     View.OnClickListener onClickListenermain = new View.OnClickListener(){
@@ -184,11 +185,16 @@ public class fragments_messages_item extends Fragment {
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
+
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
                 dos.write(text.getBytes(), 0, text.length());
                 System.out.println(text);
                 dos.flush();
+
+
+                //jsonCrypt.Send(socket, text);
+
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 byte buffer[] = new byte[1024];

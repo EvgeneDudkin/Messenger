@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.Messages_Item.MessagesListAdapter;
 import com.example.messengerpigeon.Messages_Item.Messages_Item;
 import com.example.messengerpigeon.R;
@@ -142,6 +143,10 @@ public class fragments_navigation_item_friends extends Fragment{
                         socket.getOutputStream());
                 dos.write(text.getBytes(),0,text.length());
                 dos.flush();
+
+
+                //jsonCrypt.Send(socket, text);
+
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 //���� ������ ������.
