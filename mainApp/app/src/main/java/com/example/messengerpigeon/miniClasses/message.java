@@ -17,21 +17,20 @@ public class message {
     public String login;
     public String text;
     public Date date;
+    public int messageID;
 
     public message(JSONObject fr) throws JSONException {
         login = fr.isNull("login") ? "" : fr.getString("login");
         senderId = fr.getInt("senderId");
         text = fr.isNull("text") ? "" : fr.getString("text");
-        String dateStr=fr.isNull("datatime")?"":fr.getString("datatime");
+        String dateStr = fr.isNull("datatime") ? "" : fr.getString("datatime");
         DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z", Locale.ENGLISH);
         try {
-             date = format.parse(dateStr);
-        }
-        catch (ParseException e)
-        {
+            date = format.parse(dateStr);
+        } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        messageID = fr.getInt("id");
         //TODO:
         //make date handler
     }

@@ -11,31 +11,42 @@ import com.example.messengerpigeon.R;
 
 import java.util.List;
 
-public class NavigationListAdapter  extends ArrayAdapter<Navigation_Item> {
+public class NavigationListAdapter extends ArrayAdapter<Navigation_Item> {
     Context context;
     int resLayout;
     List<Navigation_Item> listNavItems;
+    TextView tvTitle;
 
     public NavigationListAdapter(Context context, int resLayout, List<Navigation_Item> listNavItems) {
         super(context, resLayout, listNavItems);
 
-        this.context=context;
-        this.resLayout=resLayout;
-        this.listNavItems=listNavItems;
+        this.context = context;
+        this.listNavItems = listNavItems;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View v = View.inflate(context,resLayout,null);
+        if (position == 1 || position == 2) {
+            System.out.println("123");
+            this.resLayout = R.layout.small_item;
+        } else {
+            this.resLayout = R.layout.item_navigation_list;
+        }
 
-        TextView tvTitle = (TextView) v.findViewById(R.id.title);
-        ImageView navIcon = (ImageView) v.findViewById(R.id.imageIcon);
-
+        View v = View.inflate(context, resLayout, null);
         Navigation_Item navItem = listNavItems.get(position);
 
-        tvTitle.setText(navItem.getTitle());
-        navIcon.setImageResource(navItem.getResIcon());
+        if (resLayout == R.layout.small_item) {
+            tvTitle = (TextView) v.findViewById(R.id.title_mini);
+            tvTitle.setText(navItem.getTitle());
+        } else {
+            tvTitle = (TextView) v.findViewById(R.id.title);
+            ImageView navIcon = (ImageView) v.findViewById(R.id.imageIcon);
+            tvTitle.setText(navItem.getTitle());
+            navIcon.setImageResource(navItem.getResIcon());
+        }
+
 
         return v;
     }

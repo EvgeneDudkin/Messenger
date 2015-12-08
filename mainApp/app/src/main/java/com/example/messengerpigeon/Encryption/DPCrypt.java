@@ -1,4 +1,5 @@
 package com.example.messengerpigeon.Encryption; /**
+ /**
  * Double permutation encrypt (decrypt)
  * <p>
  * Created by Arthur on 26.11.2015.
@@ -13,8 +14,10 @@ public abstract class DPCrypt {
     private static int key2;
     // Key3: First permutations
     private static int[] key3;
-    // Key3: Second permutations
+    // Key4: Second permutations
     private static int[] key4;
+    // Random char alphabet
+    private static String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     // Generate random key3
     public static int[] generateKey3(int key2_) {
@@ -48,9 +51,11 @@ public abstract class DPCrypt {
             buffer[i % key1][i / key1] = str.charAt(i);
         }
 
+
+        Random r = new Random();
         if (str.length() < key1 * key2) {
             for (int i = str.length(); i < key1 * key2; ++i) {
-                buffer[i % key1][key2 - 1] = ' ';
+                buffer[i % key1][i / key1] = alphabet.charAt(r.nextInt(alphabet.length()));
             }
         }
 
@@ -68,22 +73,21 @@ public abstract class DPCrypt {
             }
             buffer[i % key2][i / key2] = str.charAt(i);
         }
-
+/*
         if (str.length() < key1 * key2) {
             for (int i = str.length(); i < key1 * key2; ++i) {
-                buffer[i % key2][key1 - 1] = ' ';
+                buffer[i % key2][i / key2] = ' ';
             }
         }
-
+*/
         return buffer;
     }
 
     // Change the order of columns
     // (Encrypt)
     private static char[][] permutationTableEncFirst(char[][] chartable) {
-        for (int i = 0; i < chartable.length; ++i) {
-            char[] row = chartable[i];
-            for (int j = 0; j < key3.length; ++j) {
+        for (int i = 0; i < key1; ++i) {
+            for (int j = 0; j < key2; ++j) {
                 char tmp = chartable[i][j];
                 chartable[i][j] = chartable[i][key3[j]];
                 chartable[i][key3[j]] = tmp;
@@ -95,35 +99,34 @@ public abstract class DPCrypt {
     // Change the order of rows
     // (Encrypt)
     private static char[][] permutationTableEncSecond(char[][] chartable) {
-        for (int i = 0; i < key4.length; ++i) {
-            String tmp = new String(chartable[i]);
+        for (int i = 0; i < key1; ++i) {
+            char[] tmp = chartable[i];
             chartable[i] = chartable[key4[i]];
-            chartable[key4[i]] = tmp.toCharArray();
+            chartable[key4[i]] = tmp;
         }
         return chartable;
     }
 
-    // Change the order of columns
+    // Change the order of columns back
     // (Decrypt)
     private static char[][] permutationTableDecFirst(char[][] chartable) {
-        for (int i = chartable.length; i >= 0; --i) {
-            char[] row = chartable[i];
-            for (int j = 0; j < key4.length; ++j) {
-                char tmp = chartable[i][j];
-                chartable[i][j] = chartable[i][key4[j]];
-                chartable[i][key4[j]] = tmp;
+        for (int i = key1 - 1; i >= 0; --i) {
+            for (int j = 0; j < key2; ++j) {
+                char tmp = chartable[j][i];
+                chartable[j][i] = chartable[j][key4[i]];
+                chartable[j][key4[i]] = tmp;
             }
         }
         return chartable;
     }
 
-    // Change the order of rows
+    // Change the order of rows back
     // (Decrypt)
     private static char[][] permutationTableDecSecond(char[][] chartable) {
-        for (int i = key4.length - 1; i >= 0; --i) {
-            String tmp = new String(chartable[i]);
-            chartable[i] = new String(chartable[key4[i]]).toCharArray();
-            chartable[key4[i]] = tmp.toCharArray();
+        for (int i = key2 - 1; i >= 0; --i) {
+            char[] tmp = chartable[i];
+            chartable[i] = chartable[key3[i]];
+            chartable[key3[i]] = tmp;
         }
         return chartable;
     }
@@ -154,7 +157,7 @@ public abstract class DPCrypt {
     }
 
     // Decrypt string
-    public static String Decrypt(String str, int key1_, int key2_, int[] key3_, int[] key4_) {
+    public static String Decrypt(String str, int key1_, int key2_, int[] key3_, int[] key4_, int length) {
         key1 = key1_;
         key2 = key2_;
         key3 = key3_;
@@ -164,14 +167,6 @@ public abstract class DPCrypt {
         chartable = permutationTableDecFirst(chartable);
         chartable = permutationTableDecSecond(chartable);
 
-        int i = key1 - 1;
-        while (chartable[key2 - 1][i % key1] == ' ') {
-            chartable[key2 - 1][i % key1] = '\0';
-            i--;
-            if (i == -1)
-                break;
-        }
-
-        return charTableToString(chartable);
+        return charTableToString(chartable).substring(0, length);
     }
 }

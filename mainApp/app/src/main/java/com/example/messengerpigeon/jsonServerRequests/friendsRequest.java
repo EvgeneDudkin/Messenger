@@ -39,11 +39,12 @@ public class friendsRequest extends jsonServerRequests {
     /**
      * Метод создания запроса
      */
-    public void createRequest() throws JSONException {
+    public void createRequest(String status) throws JSONException {
         String token = authRequest.getToken();
         JSONObject obj = new JSONObject();
         JSONObject fr = new JSONObject();
         fr.put("token",token);
+        fr.put("req",status);
         obj.put("friendsL",fr);
         strRequest = obj.toString();
         jsonRequest = obj;
