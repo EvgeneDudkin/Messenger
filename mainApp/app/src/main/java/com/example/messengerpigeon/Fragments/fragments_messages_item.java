@@ -136,11 +136,11 @@ public class fragments_messages_item extends Fragment {
             BigInteger privateKey = RSACrypt.generateKeys(publicKey, intlength);
             System.out.println(publicKey.x.toString() + " " + publicKey.y.toString());
             System.out.println(privateKey);
-            */
             int key1 = 107;
             int key2 = 113;
             int[] key3 = DPCrypt.generateKey3(key2);
             int[] key4 = DPCrypt.generateKey4(key1);
+            */
 
             try {
                 if(data[0].equals("list")) {
@@ -155,6 +155,7 @@ public class fragments_messages_item extends Fragment {
                 if(data[0].equals("send")) {
                     sendMsgReq=new messageRequest();
 
+                    /*
                     System.out.println(data[3]);
                     //String encryptMessage = RSACrypt.Encrypt(data[3],publicKey1, intlength);
                     String encryptMessage = DPCrypt.Encrypt(data[3],key1,key2,key3,key4);
@@ -164,9 +165,9 @@ public class fragments_messages_item extends Fragment {
                     System.out.println(decryptMessage);
                     sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), encryptMessage);
                     System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + encryptMessage);
-
-                    //sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
-                    //System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
+                    */
+                    sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
+                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     System.out.println(serverAddr);
                     socket = new Socket(serverAddr, serverInfo.getPort());
