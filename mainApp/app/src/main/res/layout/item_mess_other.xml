@@ -26,6 +26,7 @@
             android:id="@+id/text_other_mess"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:maxWidth="300dp"
             android:textSize="14sp"
             android:textColor="@color/colorPrimary"
             android:layout_marginLeft="10dp"

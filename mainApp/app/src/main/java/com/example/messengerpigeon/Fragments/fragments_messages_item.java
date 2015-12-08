@@ -109,7 +109,7 @@ public class fragments_messages_item extends Fragment {
     public void loadMore() {
 
         if (blueFlag == false) {
-            blueFlag=true;
+            blueFlag = true;
             AuthTask at = new AuthTask();
             at.execute("oldM", authReq.getToken(), dialogID, "15");
         }
@@ -138,24 +138,32 @@ public class fragments_messages_item extends Fragment {
                 if (Objects.equals(request.getRequestType(), "list")) {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
-                    if(listHistoryItem.size()!=0)
-                    {
-                        for (int i =0;i<mess.length;++i) {
-                            listHistoryItem.add(0,new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                    if (listHistoryItem.size() != 0) {
+                        for (int i = 0; i < mess.length; ++i) {
+                            listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
-                    }
-                    for (int i = mess.length - 1; i >= 0; i--) {
-                        listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                    } else {
+                        for (int i = mess.length - 1; i >= 0; i--) {
+                            listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                        }
                     }
                     HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
 
                     listViewHistory.setAdapter(messagesListAdapter);
-                    listViewHistory.smoothScrollToPosition(mess.length - 1);
-                    blueFlag=false;
+
+                    int index = listViewHistory.getFirstVisiblePosition() + mess.length;
+                    View v = listViewHistory.getChildAt(listViewHistory.getHeaderViewsCount());
+                    int top = (v == null) ? 0 : v.getTop();
+
+                    listViewHistory.setSelectionFromTop(index, top);
+
+                    blueFlag = false;
                 } else if (Objects.equals(request.getRequestType(), "send")) {
                     System.out.println(request.getResponse());
+                    listViewHistory.setAdapter(null);
+                    listHistoryItem.clear();
                     AuthTask at = new AuthTask();
-                    at.execute("list", authReq.getToken(), dialogID, "1");
+                    at.execute("list", authReq.getToken(), dialogID, "15");
                 }
             } catch (Exception ignored) {
                 ignored.printStackTrace();

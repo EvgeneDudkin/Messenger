@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_weight="7">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="right"
-        android:background="@drawable/round_corner_text_mess">
+        android:background="@drawable/round_corner_text_mess"
+        >
 
 
         <TextView
@@ -25,6 +27,7 @@
         <TextView
             android:id="@+id/text_me_mess"
             android:layout_height="wrap_content"
+            android:maxWidth="300dp"
             android:layout_width="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/colorPrimary"

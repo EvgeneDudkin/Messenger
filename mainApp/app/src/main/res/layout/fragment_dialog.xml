@@ -9,16 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorWhite"
-        android:choiceMode="singleChoice"
         android:divider="@color/colorWhite"
         android:dividerHeight="0dp"
-        android:layout_weight="0.15" />
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_weight="0.9">
+        android:layout_weight="6">
 
         <EditText
             android:id="@+id/text_Send"
@@ -27,7 +28,7 @@
             android:background="@drawable/round_corner_text"
             android:hint="Введите сообщение"
             android:fitsSystemWindows="true"
-            android:layout_weight="0.3"/>
+            android:layout_weight="3"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -35,7 +36,7 @@
             android:id="@+id/button_send"
             android:background="@drawable/round_corner"
             android:textColor="@color/colorWhite"
-            android:layout_weight="0.7"/>
+            android:layout_weight="7"/>
     </LinearLayout>
 
 
