@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.example.messengerpigeon.Fragments.fragment_list_inbox_requests;
 import com.example.messengerpigeon.Fragments.fragment_list_outbox_requests;
+import com.example.messengerpigeon.Fragments.fragment_protected_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_friends;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_setting;
@@ -69,11 +70,12 @@ public class Activity_Navigation extends AppCompatActivity {
         listViewNavigation = (ListView) findViewById(R.id.navigation_list);
 
         listNavigationItems = new ArrayList<Navigation_Item>();
-        listNavigationItems.add(new Navigation_Item("Друзья", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("Исходящие запросы", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("Входящие запросы", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("Сообщения", R.drawable.message));
-        listNavigationItems.add(new Navigation_Item("Настройки", R.drawable.settings));
+        listNavigationItems.add(new Navigation_Item("Friends", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("по англ?? исх", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("по англ?? вход", R.drawable.friends));
+        listNavigationItems.add(new Navigation_Item("Messages", R.drawable.message));
+        listNavigationItems.add(new Navigation_Item("Protected messages", R.drawable.message));
+        listNavigationItems.add(new Navigation_Item("Settings", R.drawable.settings));
 
         NavigationListAdapter navigationListAdapter = new NavigationListAdapter(getApplicationContext(),
                 R.layout.item_navigation_list, listNavigationItems);
@@ -84,6 +86,7 @@ public class Activity_Navigation extends AppCompatActivity {
         listFragments.add(new fragment_list_outbox_requests());
         listFragments.add(new fragment_list_inbox_requests());
         listFragments.add(new fragments_navigation_item_messages());
+        listFragments.add(new fragment_protected_messages());
         listFragments.add(new fragments_navigation_item_setting());
 
 
