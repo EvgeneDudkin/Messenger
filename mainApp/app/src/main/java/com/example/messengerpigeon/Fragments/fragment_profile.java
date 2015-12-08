@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.addFriendRequest;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
@@ -218,6 +219,8 @@ public class fragment_profile extends Fragment {
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
+
+                /*
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.writeUTF(text);
                 dos.flush();
@@ -231,6 +234,11 @@ public class fragment_profile extends Fragment {
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
+                */
+
+                jsonCrypt.Send(socket, text);
+
+                return jsonCrypt.Get(socket);
 
             } catch (Exception e) {
                 e.printStackTrace();

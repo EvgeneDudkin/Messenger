@@ -184,6 +184,7 @@ public class Activity_reg extends AppCompatActivity{
         public String sendAndListen(String text) {
             try {
 
+                /*
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
                 dos.write(text.getBytes(),0,text.length());
@@ -201,6 +202,11 @@ public class Activity_reg extends AppCompatActivity{
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
+                */
+
+                jsonCrypt.Send(socket, text);
+
+                return jsonCrypt.Get(socket);
 
             } catch (Exception e) {
                 e.printStackTrace();

@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.Messages_Item.MessagesListAdapter;
 import com.example.messengerpigeon.Messages_Item.Messages_Item;
 import com.example.messengerpigeon.R;
@@ -131,7 +133,6 @@ public class fragments_navigation_item_messages extends Fragment {
             try {
                 /* !!!
                 jsonCrypt.Send(socket, text);
-                */
 
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.write(text.getBytes(), 0, text.length());
@@ -148,6 +149,11 @@ public class fragments_navigation_item_messages extends Fragment {
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
+                */
+
+                jsonCrypt.Send(socket, text);
+
+                return jsonCrypt.Get(socket);
 
             } catch (Exception e) {
                 e.printStackTrace();

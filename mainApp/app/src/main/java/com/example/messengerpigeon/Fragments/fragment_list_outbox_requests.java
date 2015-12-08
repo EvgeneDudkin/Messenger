@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.Messages_Item.MessagesListAdapter;
 import com.example.messengerpigeon.Messages_Item.Messages_Item;
 import com.example.messengerpigeon.R;
@@ -152,6 +153,7 @@ public class fragment_list_outbox_requests extends Fragment {
         //���������� ������ � ���� ������
         public String sendAndListen(String text) {
             try {
+                /*
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.writeUTF(text);
                 dos.flush();
@@ -165,7 +167,11 @@ public class fragment_list_outbox_requests extends Fragment {
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
+*/
 
+                jsonCrypt.Send(socket, text);
+
+                return jsonCrypt.Get(socket);
             } catch (Exception e) {
                 e.printStackTrace();
                 return "Error";

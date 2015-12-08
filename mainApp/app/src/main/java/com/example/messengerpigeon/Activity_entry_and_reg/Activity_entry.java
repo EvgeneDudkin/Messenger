@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.LoginPasswordValidator;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
@@ -160,13 +161,15 @@ public class Activity_entry extends AppCompatActivity {
         public String sendAndListen(String text) {
             try {
 
-                //jsonCrypt.Send(socket, text);
+                jsonCrypt.Send(socket, text);
 
+                /*
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
                 dos.write(text.getBytes(), 0, text.length());
                 dos.flush();
+                */
 
-
+                /*
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 //���� ������ ������.
@@ -177,6 +180,8 @@ public class Activity_entry extends AppCompatActivity {
                 baos.write(buffer, 0, s);
                 byte result[] = baos.toByteArray();
                 return new String(result, "UTF-8");
+                */
+                return jsonCrypt.Get(socket);
 
             } catch (Exception e) {
                 e.printStackTrace();

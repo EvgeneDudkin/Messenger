@@ -185,15 +185,16 @@ public class fragments_messages_item extends Fragment {
         public String sendAndListen(String text) {
             try {
 
+                /*
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
                 dos.write(text.getBytes(), 0, text.length());
                 System.out.println(text);
                 dos.flush();
+*/
 
-
-                //jsonCrypt.Send(socket, text);
-
+                jsonCrypt.Send(socket, text);
+/*
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
                 byte buffer[] = new byte[1024];
@@ -207,7 +208,9 @@ public class fragments_messages_item extends Fragment {
                     ret += new String(result, "UTF-8");
                     ss = dis.read(buffer);
                 }
-                return ret;
+                */
+
+                return jsonCrypt.Get(socket);
 
             } catch (Exception e) {
                 e.printStackTrace();
