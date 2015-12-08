@@ -1,13 +1,13 @@
 var net = require('net'),
-    eventHandlers = require('./eventHandlers'),
-    mysqlConnection = require('./mysqlConnection');
-
+eventHandlers = require('./eventHandlers'),
+mysqlConnection = require('./mysqlConnection');
+var log4js = require('./log4js');
+var logger = log4js.getLogger();
 var mconnection = mysqlConnection.connection;
 var dataH = eventHandlers.dataH;
 
-
-var HOST = '172.20.205.88';
-var PORT = 3001;
+var HOST = '192.168.0.101';
+var PORT = 3000;
 
 //Создаем экземпляр сервера
 //Функция внутри - обработчик события 'connection' (то есть, когда к серверу осуществляется подключение)
@@ -16,33 +16,46 @@ var server = net.createServer(function(sock) {
     var stop = null;
     var length = 0;
     var str = "";
-
     //Отчет, о том что кто-то приконектился
-    console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+    //console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+    logger.trace();
+    logger.trace();
+    logger.trace("=================================");
+    logger.trace('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+    logger.trace("=================================");
     //Обработчик собтия 'data'. То есть клиент передает какие-то данные
     sock.on('data', function(data) {
         if(bDATA) {
-            console.log(data.toString());
+            //logger.debug(data.toString());
             str += data.toString();
             if(str.length >= length) {
                 dataH(str,sock,mconnection);
             }
         }
         else {
-            console.log(data);
+            logger.debug(data);
             length = parseInt(data.toString());
-            console.log(length);
+
+            logger.debug(length);
+            if(isNaN(length)) {
+                logger.error("NAN");
+                sock.destroy();
+            }
         }
         bDATA = true;
     });
     /*sock.on('data', function(data) {
-                dataH(data.toString(),sock,mconnection);
+        dataH(data.toString(),sock,mconnection);
         bDATA = true;
     });*/
 
     //Обработчик события 'close'. То есть, когда клиент закрыл соединение
     sock.on('close', function(data) {
-        console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
+        logger.trace("=================================");
+        logger.trace('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
+        logger.trace("=================================");
+        logger.trace();
+        logger.trace();
     });
 
 
@@ -68,4 +81,4 @@ var server = net.createServer(function(sock) {
 server.listen(PORT, HOST);
 
 
-console.log('Server listening on ' + HOST +':'+ PORT);
+logger.trace('Server listening on ' + HOST +':'+ PORT);
