@@ -17,6 +17,7 @@ public class message {
     public String login;
     public String text;
     public Date date;
+    public  int messageID;
 
     public message(JSONObject fr) throws JSONException {
         login = fr.isNull("login") ? "" : fr.getString("login");
@@ -31,7 +32,7 @@ public class message {
         {
             e.printStackTrace();
         }
-
+        messageID=fr.getInt("id");
         //TODO:
         //make date handler
     }

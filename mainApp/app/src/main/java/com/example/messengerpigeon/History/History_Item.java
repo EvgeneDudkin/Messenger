@@ -7,12 +7,14 @@ public class History_Item {
     private String name_sender;
     private String message_one;
     private String time_send;
+    private int messageId;
 
-    public History_Item(String name_sender,String mess,String time) {
+    public History_Item(String name_sender,String mess,String time,int _messageId) {
         super();
         this.name_sender=name_sender;
         this.message_one=mess;
         this.time_send=time;
+        this.messageId=_messageId;
     }
     public String getName_sender(){
         return name_sender;
@@ -32,5 +34,8 @@ public class History_Item {
     {
         this.time_send=time;
     }
-
+    public int getMessageId()
+    {
+        return  messageId;
+    }
 }

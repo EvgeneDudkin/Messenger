@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -16,6 +17,7 @@ import com.example.messengerpigeon.History.HistoryListAdapter;
 import com.example.messengerpigeon.History.History_Item;
 import com.example.messengerpigeon.LoginPasswordValidator;
 import com.example.messengerpigeon.R;
+import com.example.messengerpigeon.jsonRequest.jsonRequest;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
 import com.example.messengerpigeon.jsonServerRequests.messageRequest;
 import com.example.messengerpigeon.miniClasses.message;
@@ -38,31 +40,56 @@ public class fragments_messages_item extends Fragment {
     List<Fragment> listFragmentHistory;
     List<History_Item> listHistoryItem;
     private Button button_send;
-    private String dialogID="";
-    authRequest authReq= new authRequest();
-    View vv=null;
+    private String dialogID = "";
+    authRequest authReq = new authRequest();
+    View vv = null;
+
+    boolean blueFlag = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Bundle arg=this.getArguments();
+        Bundle arg = this.getArguments();
         vv = inflater.inflate(R.layout.fragment_dialog, container, false);
-        dialogID= String.valueOf(arg.getByte("dialogId"));
+        dialogID = String.valueOf(arg.getByte("dialogId"));
 
-        listViewHistory=(ListView)vv.findViewById(R.id.list_history);
+        listViewHistory = (ListView) vv.findViewById(R.id.list_history);
         listViewHistory.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listViewHistory.setStackFromBottom(true);
-        listHistoryItem=new ArrayList<History_Item>();
-        button_send=(Button)vv.findViewById(R.id.button_send);
+        listHistoryItem = new ArrayList<History_Item>();
+        button_send = (Button) vv.findViewById(R.id.button_send);
         button_send.setOnClickListener(onClickListenermain);
 
         AuthTask at = new AuthTask();
-        at.execute("list",authReq.getToken(), dialogID,"15");
+        at.execute("list", authReq.getToken(), dialogID, "15");
+
+        listViewHistory.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScroll(AbsListView view,
+                                 int firstVisibleItem, int visibleItemCount,
+                                 int totalItemCount) {
+                //Algorithm to check if the last item is visible or not
+                final int lastItem = totalItemCount - firstVisibleItem;
+                if (lastItem == totalItemCount && totalItemCount != 0) {
+                    // you have reached end of list, load more data
+                    System.out.println("popali");
+                    loadMore();
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                //blank, not using this
+            }
+        });
+
         return vv;
     }
-    View.OnClickListener onClickListenermain = new View.OnClickListener(){
+
+    View.OnClickListener onClickListenermain = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(v.getId()==R.id.button_send) {
+            if (v.getId() == R.id.button_send) {
                 AuthTask at = new AuthTask();
                 EditText tt = (EditText) vv.findViewById(R.id.text_Send);
                 if (!tt.getText().toString().equals("")) {
@@ -78,12 +105,24 @@ public class fragments_messages_item extends Fragment {
             }
         }
     };
+
+    public void loadMore() {
+
+        if (blueFlag == false) {
+            blueFlag=true;
+            AuthTask at = new AuthTask();
+            at.execute("oldM", authReq.getToken(), dialogID, "15");
+        }
+    }
+
     public class AuthTask extends AsyncTask<String, Void, String> {
         private Socket socket = null;
-        private messageRequest listMsgReq=null;
-        private messageRequest sendMsgReq=null;
+        private messageRequest listMsgReq = null;
+        private messageRequest sendMsgReq = null;
+        private jsonRequest oldMReq = null;
+
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             super.onPreExecute();
 
             System.out.println("1");
@@ -94,25 +133,30 @@ public class fragments_messages_item extends Fragment {
             try {
 
                 System.out.println(ret);
-                messageRequest request=new messageRequest();
+                messageRequest request = new messageRequest();
                 request.responseHandler(ret);
-                if(Objects.equals(request.getRequestType(), "list")) {
+                if (Objects.equals(request.getRequestType(), "list")) {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
-
-                    for (int i = mess.length-1; i >= 0; i--) {
-                        listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString()));
+                    if(listHistoryItem.size()!=0)
+                    {
+                        for (int i =0;i<mess.length;++i) {
+                            listHistoryItem.add(0,new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                        }
+                    }
+                    for (int i = mess.length - 1; i >= 0; i--) {
+                        listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                     }
                     HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
 
                     listViewHistory.setAdapter(messagesListAdapter);
                     listViewHistory.smoothScrollToPosition(mess.length - 1);
+                    blueFlag=false;
+                } else if (Objects.equals(request.getRequestType(), "send")) {
+                    System.out.println(request.getResponse());
+                    AuthTask at = new AuthTask();
+                    at.execute("list", authReq.getToken(), dialogID, "1");
                 }
-                else
-                    if(Objects.equals(request.getRequestType(), "send"))
-                    {
-                        System.out.println(request.getResponse());
-                    }
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }
@@ -121,25 +165,28 @@ public class fragments_messages_item extends Fragment {
         @Override
         protected String doInBackground(String... data) {
             try {
-                if(data[0].equals("list")) {
-                    listMsgReq=new messageRequest();
+                if (data[0].equals("list")) {
+                    listMsgReq = new messageRequest();
                     listMsgReq.messageListRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     System.out.println(serverAddr);
                     socket = new Socket(serverAddr, serverInfo.getPort());
                     return sendAndListen(listMsgReq.getMsgListRequest());
-                }
-                else
-                if(data[0].equals("send")) {
-                    sendMsgReq=new messageRequest();
+                } else if (data[0].equals("send")) {
+                    sendMsgReq = new messageRequest();
                     sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
-                    System.out.println(data[1]+", "+Integer.parseInt(data[2])+", "+data[3]);
+                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     System.out.println(serverAddr);
                     socket = new Socket(serverAddr, serverInfo.getPort());
                     return sendAndListen(sendMsgReq.getMsgSendRequest());
-                }
-                else
+                } else if (data[0].equals("oldM")) {
+                    oldMReq = new jsonRequest();
+                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId());
+                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                    socket = new Socket(serverAddr, serverInfo.getPort());
+                    return sendAndListen(out);
+                } else
                     return sendAndListen("");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,7 +199,7 @@ public class fragments_messages_item extends Fragment {
             try {
                 DataOutputStream dos = new DataOutputStream(
                         socket.getOutputStream());
-                dos.write(text.getBytes(),0,text.length());
+                dos.write(text.getBytes(), 0, text.length());
                 System.out.println(text);
                 dos.flush();
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
@@ -161,7 +208,7 @@ public class fragments_messages_item extends Fragment {
                 String ret = "";
                 int ss = dis.read(buffer);
 
-                while(ss != -1) {
+                while (ss > 0) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     baos.write(buffer, 0, ss);
                     byte result[] = baos.toByteArray();
@@ -176,7 +223,6 @@ public class fragments_messages_item extends Fragment {
             }
 
         }
-
 
 
     }
