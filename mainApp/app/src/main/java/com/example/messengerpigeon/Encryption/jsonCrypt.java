@@ -45,6 +45,7 @@ public class jsonCrypt {
 
         try {
             new_json.put("query", text_crypt);
+            new_json.put("key", text.length());
         } catch (Exception e) {
             e.printStackTrace();
             return "Error";
