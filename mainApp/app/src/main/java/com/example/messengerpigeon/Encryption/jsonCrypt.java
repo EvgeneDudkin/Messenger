@@ -33,9 +33,10 @@ public class jsonCrypt {
         int key1 = 18;
         int key2 = 17;
         int[] key3 = {2, 6, 4, 5, 1, 4, 2, 6, 2, 12, 4, 6, 8, 4, 2, 4, 9};
+        int[] key4 = {2, 6, 4, 5, 1, 4, 2, 6, 2, 12, 4, 6, 8, 4, 2, 4, 9, 11};
 
         JSONObject new_json = new JSONObject();
-        String text_crypt = DPCrypt.Encrypt(text, key1, key2, key3);
+        String text_crypt = DPCrypt.Encrypt(text, key1, key2, key3, key4);
 
         try {
             new_json.put("query", text_crypt);
