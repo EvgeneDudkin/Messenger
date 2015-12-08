@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.messengerpigeon.Encryption.DPCrypt;
 import com.example.messengerpigeon.Encryption.Pair;
 import com.example.messengerpigeon.Encryption.RSACrypt;
 import com.example.messengerpigeon.History.HistoryListAdapter;
@@ -123,11 +124,24 @@ public class fragments_messages_item extends Fragment {
 
         @Override
         protected String doInBackground(String... data) {
-            /* !!!
-            int intlength = 64;
+
+            Pair publicKey1 = new Pair(new BigInteger("731290067"), new BigInteger("4540687"));
+            Pair publicKey2 = new Pair(new BigInteger("959258543"), new BigInteger("4958761"));
+            BigInteger privateKey1 = new BigInteger("60210103");
+            BigInteger privateKey2 = new BigInteger("907563841");
+
+            int intlength = 16;
+            /*
             Pair publicKey = new Pair();
             BigInteger privateKey = RSACrypt.generateKeys(publicKey, intlength);
+            System.out.println(publicKey.x.toString() + " " + publicKey.y.toString());
+            System.out.println(privateKey);
             */
+            int key1 = 107;
+            int key2 = 113;
+            int[] key3 = DPCrypt.generateKey3(key2);
+            int[] key4 = DPCrypt.generateKey4(key1);
+
             try {
                 if(data[0].equals("list")) {
                     listMsgReq=new messageRequest();
@@ -140,13 +154,19 @@ public class fragments_messages_item extends Fragment {
                 else
                 if(data[0].equals("send")) {
                     sendMsgReq=new messageRequest();
-                    /* !!!
-                    String cryptMessage = RSACrypt.Encrypt(data[3],publicKey, intlength);
-                    sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), cryptMessage);
-                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + cryptMessage);
-                    */
-                    sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
-                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
+
+                    System.out.println(data[3]);
+                    //String encryptMessage = RSACrypt.Encrypt(data[3],publicKey1, intlength);
+                    String encryptMessage = DPCrypt.Encrypt(data[3],key1,key2,key3,key4);
+                    System.out.println(encryptMessage);
+                    //String decryptMessage = RSACrypt.Decrypt(encryptMessage, publicKey1, privateKey1, intlength);
+                    String decryptMessage = DPCrypt.Decrypt(encryptMessage,key1,key2,key3,key4,data[3].length());
+                    System.out.println(decryptMessage);
+                    sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), encryptMessage);
+                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + encryptMessage);
+
+                    //sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
+                    //System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     System.out.println(serverAddr);
                     socket = new Socket(serverAddr, serverInfo.getPort());

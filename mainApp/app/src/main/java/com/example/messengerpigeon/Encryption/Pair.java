@@ -14,7 +14,7 @@ public class Pair {
         y = BigInteger.ZERO;
     }
 
-    Pair(BigInteger xx, BigInteger yy) {
+    public Pair(BigInteger xx, BigInteger yy) {
         x = xx;
         y = yy;
     }
