@@ -25,9 +25,6 @@ import com.example.messengerpigeon.jsonServerRequests.createNewProtectedDialogRe
 import com.example.messengerpigeon.miniClasses.friend;
 import com.example.messengerpigeon.serverInfo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;

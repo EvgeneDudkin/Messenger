@@ -21,9 +21,6 @@ import com.example.messengerpigeon.jsonServerRequests.searchFriendRequest;
 import com.example.messengerpigeon.miniClasses.friend;
 import com.example.messengerpigeon.serverInfo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -39,6 +36,7 @@ public class fragment_list_inbox_requests extends Fragment {
     public friend[] listFriends;
     private View view;
     boolean true_false = true;
+    private  static FragmentManager fragmentManager;
 
     public static fragment_list_inbox_requests getInstance() {
         Bundle args = new Bundle();
@@ -51,7 +49,7 @@ public class fragment_list_inbox_requests extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
-
+        Activity_Navigation.i=0;
         listViewFriends = (ListView) view.findViewById(R.id.list_in_req);
         AuthTask at = new AuthTask();
         at.execute();
@@ -65,11 +63,11 @@ public class fragment_list_inbox_requests extends Fragment {
         listFriendsItem = new ArrayList<Messages_Item>();
         if (l == 0) {
             true_false = false;
-            listFriendsItem.add(new Messages_Item("Нет входящих запросов", R.drawable.account, ""));
+            listFriendsItem.add(new Messages_Item("Нет входящих запросов", R.mipmap.ic_account, ""));
         } else {
             true_false=true;
             for (int i = 0; i < l; i++) {
-                listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.drawable.account, listFriends[i].Login));
+                listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.mipmap.ic_account, listFriends[i].Login));
             }
         }
         MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getActivity(), R.layout.item_messages, listFriendsItem);
@@ -87,13 +85,18 @@ public class fragment_list_inbox_requests extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     if (true_false) {
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragmentFriends.get(position)).commit();
+                        Activity_Navigation.i=3;
+                        fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragmentFriends.get(position)).addToBackStack("3").commit();
                         Activity_Navigation.toolbar.setTitle(listFriends[position].Login);
                     }
                 }
             });
         }
+    }
+    public static  void in_backButtonWasPressed() {
+        Activity_Navigation.i=0;
+        fragmentManager.popBackStack();
     }
 
 

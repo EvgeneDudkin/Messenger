@@ -329,7 +329,7 @@ public class jsonRequest {
      * @param idStart   с какого сообщения начинать, -1 если null
      * @throws Exception
      */
-    public String lastNmsgRequest(String token, int dialogId, int msgCount, Date dateStart, int idStart) throws Exception {
+    public String lastNmsgRequest(String token, int dialogId, int msgCount, Date dateStart, int idStart,int idLast) throws Exception {
         JSONObject obj = new JSONObject();
         JSONObject lastNmsg = new JSONObject();
         lastNmsg.put("token", token);
@@ -340,6 +340,10 @@ public class jsonRequest {
             lastNmsg.put("dateStart", df.format(dateStart));
         } else if (idStart != -1) {
             lastNmsg.put("idStart", idStart);
+        }
+        else if(idLast != -1)
+        {
+            lastNmsg.put("idLast", idLast);
         }
         obj.put("lastNmsg", lastNmsg);
         type = "lnm";

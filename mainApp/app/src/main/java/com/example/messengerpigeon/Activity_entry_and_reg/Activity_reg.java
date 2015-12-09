@@ -38,6 +38,8 @@ public class Activity_reg extends AppCompatActivity{
     private EditText text_login;
     private EditText text_password1;
     private EditText text_password2;
+    private EditText text_profile_first_name;
+    private EditText text_profile_second_name;
     View focus=null;
 
     LoginPasswordValidator loginPasswordValidator;
@@ -54,6 +56,10 @@ public class Activity_reg extends AppCompatActivity{
         text_login=(EditText)findViewById(R.id.text_login);
         text_password1=(EditText)findViewById(R.id.text_password1);
         text_password2=(EditText)findViewById(R.id.text_password2);
+        text_profile_first_name=(EditText)findViewById(R.id.text_profile_first_name);
+        text_profile_second_name=(EditText)findViewById(R.id.text_profile_second_name);
+
+
 
 
         /*Window window = getWindow();
@@ -86,7 +92,20 @@ public class Activity_reg extends AppCompatActivity{
         }
         return true;
     }
-
+    private boolean checkName(String name, String secondName){
+        if(name.length()<1){
+            text_profile_first_name.setError("Введите имя");
+            focus=text_profile_first_name;
+            return false;
+        }
+        else if(secondName.length()<1){
+            text_profile_second_name.setError("Введите фамилию");
+            focus=text_profile_second_name;
+            return false;
+        }
+        else
+            return true;
+    }
     private boolean checkPass(String pass1, String pass2) {
         loginPasswordValidator = new LoginPasswordValidator();
         if (loginPasswordValidator.validatePassword(pass1)) {
@@ -115,17 +134,21 @@ public class Activity_reg extends AppCompatActivity{
             text_login.setError(null);
             text_password1.setError(null);
             text_password2.setError(null);
+            text_profile_first_name.setError(null);
+            text_profile_second_name.setError(null);
             switch (v.getId()) {
                 case R.id.button_entry:
                     RegTask at = new RegTask();
                     String login = text_login.getText().toString();
                     String pass1 = text_password1.getText().toString();
                     String pass2 = text_password2.getText().toString();
+                    String firstName = text_profile_first_name.getText().toString();
+                    String secondName = text_profile_second_name.getText().toString();
                     loginPasswordValidator = new LoginPasswordValidator();
-                    if (!checkLogin(login)||!checkPass(pass1,pass2)) {
+                    if (!checkLogin(login)||!checkPass(pass1,pass2) || !(checkName(firstName,secondName))) {
                        focus.requestFocus();
                     } else {
-                        at.execute(login, pass1);
+                        at.execute(login, pass1,firstName,secondName);
                     }
 
                     break;
@@ -168,7 +191,7 @@ public class Activity_reg extends AppCompatActivity{
         @Override
         protected String doInBackground(String... data) {
             try {
-                regReq.createRequest(data[0], data[1]);
+                regReq.createRequest(data[0], data[1], data[2],data[3]);
                 InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                 System.out.println(serverAddr);
                 socket = new Socket(serverAddr, serverInfo.getPort());

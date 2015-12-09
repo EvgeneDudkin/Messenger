@@ -9,7 +9,7 @@
         android:id="@+id/imageIcon"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/friends"/>
+        android:src="@mipmap/ic_account_multiple"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorTextPrimary"
             android:textStyle="bold"
             android:layout_marginLeft="10dp"
             android:text="@string/friends"/>

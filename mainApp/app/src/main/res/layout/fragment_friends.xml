@@ -1,33 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:clickable="false">
+    android:clickable="false"
+    android:orientation="vertical">
 
-
-    <EditText
-        android:layout_width="194dp"
-        android:layout_height="54dp"
-        android:id="@+id/editText_search" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="155dp"
-        android:layout_height="50dp"
-        android:text="Поиск"
-        android:id="@+id/button_search"
-        android:layout_gravity="left"
-        android:enabled="true"
-        android:elegantTextHeight="false"
-        android:background="@drawable/round_corner"
-        android:textColor="@color/colorWhite"/>
-
-    <ListView
-        android:id="@+id/list_friends"
+    <RelativeLayout
+        android:id="@+id/rl_1"
         android:layout_width="match_parent"
-        android:layout_height="498dp"
-        android:background="@color/colorWhite"
-        android:choiceMode="singleChoice" />
+        android:layout_height="40dp"
+        android:background="@color/colorWhite">
 
-</LinearLayout>
+        <RelativeLayout
+            android:id="@+id/rl_2"
+            android:layout_width="340dp"
+            android:layout_height="40dp">
+
+            <EditText
+                android:id="@+id/editText_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/rl_2">
+
+            <Button
+                android:id="@+id/button_search"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@mipmap/ic_magnify"
+                android:enabled="true"
+                android:textColor="@color/colorWhite" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rl_1">
+
+        <ListView
+            android:id="@+id/list_friends"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorWhite"
+            android:choiceMode="singleChoice"
+            android:divider="@color/colorDivider"
+            android:dividerHeight="1dp"/>
+    </RelativeLayout>
+
+</RelativeLayout>
