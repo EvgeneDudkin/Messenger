@@ -14,6 +14,7 @@ public class History_Item {
         this.name_sender = name_sender;
         this.message_one = mess;
         this.time_send = time;
+        this.messageId=_messageId;
     }
 
     public String getName_sender() {
