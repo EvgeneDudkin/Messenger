@@ -54,6 +54,19 @@ public class listDialogsRequest extends jsonServerRequests {
         jsonRequest = obj;
     }
 
+
+    public void createProtectedRequest(String token) throws JSONException {
+        JSONObject obj = new JSONObject();
+        JSONObject auth = new JSONObject();
+        auth.put("token", token);
+        obj.put("dialogsL", auth);
+        strProtectedRequest = obj.toString();
+        jsonProtectedRequest = obj;
+    }
+
+
+
+
     /**
      * override Обработчик ответа сервера
      * @param input Строка, которую вернул сервер
@@ -62,6 +75,7 @@ public class listDialogsRequest extends jsonServerRequests {
         try {
             JSONObject ret = new JSONObject(input);
             response = ret.get("response").toString();
+
             response = Objects.equals(response, "OK") ? response : response.substring(6);
             JSONArray jsonDialogs = ret.getJSONArray("dialogs");
             dialogs = new dialog[jsonDialogs.length()];
