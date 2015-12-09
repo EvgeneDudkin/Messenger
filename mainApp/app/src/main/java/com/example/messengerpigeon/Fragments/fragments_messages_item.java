@@ -3,7 +3,6 @@ package com.example.messengerpigeon.Fragments;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.messengerpigeon.Encryption.DPCrypt;
+import com.example.messengerpigeon.Encryption.Pair;
+import com.example.messengerpigeon.Encryption.RSACrypt;
 import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.History.HistoryListAdapter;
 import com.example.messengerpigeon.History.History_Item;
@@ -23,6 +25,9 @@ import com.example.messengerpigeon.jsonServerRequests.messageRequest;
 import com.example.messengerpigeon.miniClasses.message;
 import com.example.messengerpigeon.serverInfo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -45,10 +50,13 @@ public class fragments_messages_item extends Fragment {
     authRequest authReq = new authRequest();
     View vv = null;
     boolean WhiteFlag = false;
-    private Toolbar toolbar;
 
     boolean alreadyAtTop = false;
 
+    boolean scrolling=false;
+    boolean alreadyAtBottom=false;
+    boolean messagesLoaded=false;
+    int align=0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arg = this.getArguments();
@@ -71,13 +79,27 @@ public class fragments_messages_item extends Fragment {
                                  int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
                 //Algorithm to check if the last item is visible or not
-                final int lastItem = totalItemCount - firstVisibleItem;
-                if (!alreadyAtTop) {
-                    if (lastItem == totalItemCount && totalItemCount != 0) {
-                        // you have reached end of list, load more data
-                        System.out.println("popali");
-                        alreadyAtTop = true;
-                        loadMore();
+                if(messagesLoaded) {
+                    System.out.println(firstVisibleItem + " asdasd " + (totalItemCount));
+                    int lastItem = totalItemCount - firstVisibleItem;
+                    if (!alreadyAtTop) {
+                        if (lastItem == totalItemCount && totalItemCount != 0) {
+                            // you have reached end of list, load more data
+                            System.out.println("popali");
+                            alreadyAtTop = true;
+                            align = 1;
+                            loadOldHistory();
+                        }
+                    }
+                    if (!alreadyAtBottom && scrolling) {
+                        //CHTO ZA PYAT???????????
+                        if (firstVisibleItem + 5 == totalItemCount && totalItemCount != 0) {
+                            // you have reached end of list, load more data
+                            System.out.println("popali2");
+                            alreadyAtBottom = true;
+                            align = -1;
+                            loadNewMessages();
+                        }
                     }
                 }
             }
@@ -85,66 +107,63 @@ public class fragments_messages_item extends Fragment {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 //blank, not using this
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    scrolling = false;
+                    alreadyAtBottom = false;
+                } else if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                    scrolling = true;
+                }
             }
         });
-    return vv;
-}
+        return vv;
+    }
 
-   /* private void initToolbar() {
-        toolbar = (Toolbar) vv.findViewById(R.id.toolbar_new);
-        toolbar.setTitle("blaaaaaaaaaaaa");
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Toast toastPass = Toast.makeText(getActivity(), "Тут действие", Toast.LENGTH_LONG);
-                toastPass.setGravity(Gravity.CENTER, 0, -90);
-                toastPass.show();
-                return false;
-            }
-        });
-    }*/
-
-View.OnClickListener onClickListenermain = new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.button_send) {
-            AuthTask at = new AuthTask();
-            EditText tt = (EditText) vv.findViewById(R.id.text_Send);
-            if (!tt.getText().toString().equals("")) {
-                at.execute("send", authReq.getToken(), dialogID, tt.getText().toString());
-                tt.setText("");
-                //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
-                tt.clearFocus();
-                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-            } else {
-                //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
-                getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    View.OnClickListener onClickListenermain = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.button_send) {
+                AuthTask at = new AuthTask();
+                EditText tt = (EditText) vv.findViewById(R.id.text_Send);
+                if (!tt.getText().toString().equals("")) {
+                    at.execute("send", authReq.getToken(), dialogID, tt.getText().toString());
+                    tt.setText("");
+                    //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
+                    tt.clearFocus();
+                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                } else {
+                    //клавиатура должна исчезнуть, но нет ¯\_(ツ)_/¯
+                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                }
             }
         }
-    }
-};
+    };
 
-    public void loadMore() {
+    public void loadOldHistory() {
         AuthTask at = new AuthTask();
         at.execute("oldM", authReq.getToken(), dialogID, "15");
     }
-
-public class AuthTask extends AsyncTask<String, Void, String> {
-    private Socket socket = null;
-    private messageRequest listMsgReq = null;
-    private messageRequest sendMsgReq = null;
-    private jsonRequest oldMReq = null;
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-        System.out.println("1");
+    public void loadNewMessages()
+    {
+        AuthTask at = new AuthTask();
+        at.execute("newM", authReq.getToken(), dialogID, "15");
     }
 
-    @Override
-    protected void onPostExecute(final String ret) {
-        try {
+    public class AuthTask extends AsyncTask<String, Void, String> {
+        private Socket socket = null;
+        private messageRequest listMsgReq = null;
+        private messageRequest sendMsgReq = null;
+        private jsonRequest oldMReq = null;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            System.out.println("1");
+        }
+
+        @Override
+        protected void onPostExecute(final String ret) {
+            try {
 
                 System.out.println(ret);
                 messageRequest request = new messageRequest();
@@ -152,9 +171,10 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                 if (Objects.equals(request.getRequestType(), "list")) {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
-                    WhiteFlag = mess.length == 0;
+
                     Date now = new Date();
                     if (listHistoryItem.size() != 0) {
+                        if(alreadyAtTop && align==1) {
                         for (int i = 0; i < mess.length; ++i) {
 
                             if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
@@ -169,6 +189,15 @@ public class AuthTask extends AsyncTask<String, Void, String> {
 
                             //listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
+                        }
+                        else
+                        if(alreadyAtBottom && align==-1)
+                        {
+                            for (int i = mess.length - 1; i >= 0; i--) {
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                            }
+                        }
+
                     } else {
                         for (int i = mess.length - 1; i >= 0; i--) {
                             if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
@@ -183,36 +212,39 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                             //listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
                     }
-                } else {
-                    for (int i = mess.length - 1; i >= 0; i--) {
-                        listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                    if(mess.length!=0) {
+                        HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
+
+                        listViewHistory.setAdapter(messagesListAdapter);
+
+                        int index = listViewHistory.getFirstVisiblePosition() + mess.length;
+                        View v = listViewHistory.getChildAt(listViewHistory.getHeaderViewsCount());
+                        int top = (v == null) ? 0 : v.getTop();
+                        if(align!=-1)
+                        listViewHistory.setSelectionFromTop(index, top);
                     }
+                    if(align==1)
+                        alreadyAtTop = mess.length == 0;
+                    else
+                    if(align==-1)
+                        alreadyAtBottom= mess.length == 0;
+                    align=0;
+                    messagesLoaded=true;
+
+                } else if (Objects.equals(request.getRequestType(), "send")) {
+                    System.out.println(request.getResponse());
+                    listViewHistory.setAdapter(null);
+                    listHistoryItem.clear();
+                    AuthTask at = new AuthTask();
+                    at.execute("list", authReq.getToken(), dialogID, "15");
                 }
-                HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
-
-                listViewHistory.setAdapter(messagesListAdapter);
-
-                int index = listViewHistory.getFirstVisiblePosition() + mess.length;
-                View v = listViewHistory.getChildAt(listViewHistory.getHeaderViewsCount());
-                int top = (v == null) ? 0 : v.getTop();
-
-                listViewHistory.setSelectionFromTop(index, top);
-                    alreadyAtTop = false;
-
-            } else if (Objects.equals(request.getRequestType(), "send")) {
-                System.out.println(request.getResponse());
-                listViewHistory.setAdapter(null);
-                listHistoryItem.clear();
-                AuthTask at = new AuthTask();
-                at.execute("list", authReq.getToken(), dialogID, "15");
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
         }
-    }
 
-    @Override
-    protected String doInBackground(String... data) {
+        @Override
+        protected String doInBackground(String... data) {
 
             /*
             Pair publicKey1 = new Pair(new BigInteger("731290067"), new BigInteger("4540687"));
@@ -231,16 +263,16 @@ public class AuthTask extends AsyncTask<String, Void, String> {
             int[] key4 = DPCrypt.generateKey4(key1);
             */
 
-        try {
-            if (data[0].equals("list")) {
-                listMsgReq = new messageRequest();
-                listMsgReq.messageListRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
-                InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
-                System.out.println(serverAddr);
-                socket = new Socket(serverAddr, serverInfo.getPort());
-                return sendAndListen(listMsgReq.getMsgListRequest());
-            } else if (data[0].equals("send")) {
-                sendMsgReq = new messageRequest();
+            try {
+                if (data[0].equals("list")) {
+                    listMsgReq = new messageRequest();
+                    listMsgReq.messageListRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]));
+                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                    System.out.println(serverAddr);
+                    socket = new Socket(serverAddr, serverInfo.getPort());
+                    return sendAndListen(listMsgReq.getMsgListRequest());
+                } else if (data[0].equals("send")) {
+                    sendMsgReq = new messageRequest();
 
                     /*
                     System.out.println(data[3]);
@@ -253,29 +285,39 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                     sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), encryptMessage);
                     System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + encryptMessage);
                     */
-                sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
-                System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
-                InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
-                System.out.println(serverAddr);
-                socket = new Socket(serverAddr, serverInfo.getPort());
-                return sendAndListen(sendMsgReq.getMsgSendRequest());
-            } else if (data[0].equals("oldM")) {
-                oldMReq = new jsonRequest();
-                String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId());
-                InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
-                socket = new Socket(serverAddr, serverInfo.getPort());
-                return sendAndListen(out);
-            } else
-                return sendAndListen("");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
+                    sendMsgReq.sendMessageRequest(data[1], Integer.parseInt(data[2]), data[3]);
+                    System.out.println(data[1] + ", " + Integer.parseInt(data[2]) + ", " + data[3]);
+                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                    System.out.println(serverAddr);
+                    socket = new Socket(serverAddr, serverInfo.getPort());
+                    return sendAndListen(sendMsgReq.getMsgSendRequest());
+                } else if (data[0].equals("oldM")) {
+                    oldMReq = new jsonRequest();
+                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId(),-1);
+                    System.out.println(out);
+                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                    socket = new Socket(serverAddr, serverInfo.getPort());
+                    return sendAndListen(out);
+                }
+                else if (data[0].equals("newM")) {
+                    oldMReq = new jsonRequest();
+                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null,-1, listHistoryItem.get(listHistoryItem.size()-1).getMessageId());
+                    System.out.println(out);
+                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                    socket = new Socket(serverAddr, serverInfo.getPort());
+                    return sendAndListen(out);
+                }
+                else
+                    return sendAndListen("");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return e.getMessage();
+            }
         }
-    }
 
-    //���������� ������ � ���� ������
-    public String sendAndListen(String text) {
-        try {
+        //���������� ������ � ���� ������
+        public String sendAndListen(String text) {
+            try {
 
                 /*
                 DataOutputStream dos = new DataOutputStream(
@@ -285,7 +327,7 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                 dos.flush();
 */
 
-            jsonCrypt.Send(socket, text);
+                jsonCrypt.Send(socket, text);
 /*
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
 
@@ -302,16 +344,15 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                 }
                 */
 
-            return jsonCrypt.Get(socket);
+                return jsonCrypt.Get(socket);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Error";
+            }
+
         }
 
+
     }
-
-
 }
-}
-
