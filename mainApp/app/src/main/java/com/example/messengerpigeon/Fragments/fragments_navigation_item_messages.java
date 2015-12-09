@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class fragments_navigation_item_messages extends Fragment {
+public class fragments_navigation_item_messages extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     TextView text;
     int countDialog;
 
@@ -39,16 +41,32 @@ public class fragments_navigation_item_messages extends Fragment {
 
     listDialogsRequest req = new listDialogsRequest();
 
+    private SwipeRefreshLayout mSwipeLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-         v = inflater.inflate(R.layout.fragment_messages, container, false);
-        Activity_Navigation.i=0;
+        v = inflater.inflate(R.layout.fragment_messages, container, false);
+        Activity_Navigation.i = 0;
         AuthTask at = new AuthTask();
         at.execute(authRequest.getToken());
 
+        mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
+        mSwipeLayout.setOnRefreshListener(this);
 
         return v;
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.d("my_tag", "refresh");
+        System.out.println("test");
+        listMessItem.clear();
+        AuthTask at = new AuthTask();
+        at.execute(authRequest.getToken());
+        // stop refresh
+        mSwipeLayout.setRefreshing(false);
+        System.out.println();
     }
 
     private void initListDialog() {
@@ -87,8 +105,8 @@ public class fragments_navigation_item_messages extends Fragment {
         });
     }
 
-    public static  void messages_backButtonWasPressed() {
-        Activity_Navigation.i=0;
+    public static void messages_backButtonWasPressed() {
+        Activity_Navigation.i = 0;
         fragmentManager.popBackStack();
     }
 

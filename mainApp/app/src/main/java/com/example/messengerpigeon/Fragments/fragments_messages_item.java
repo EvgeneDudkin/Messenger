@@ -30,7 +30,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,7 +51,8 @@ public class fragments_messages_item extends Fragment {
     View vv = null;
     boolean WhiteFlag = false;
 
-    boolean alreadyAtTop=false;
+    boolean alreadyAtTop = false;
+
     boolean scrolling=false;
     boolean alreadyAtBottom=false;
     boolean messagesLoaded=false;
@@ -169,10 +172,22 @@ public class fragments_messages_item extends Fragment {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
 
+                    Date now = new Date();
                     if (listHistoryItem.size() != 0) {
                         if(alreadyAtTop && align==1) {
                         for (int i = 0; i < mess.length; ++i) {
-                            listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+
+                            //listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
                         }
                         else
@@ -185,7 +200,16 @@ public class fragments_messages_item extends Fragment {
 
                     } else {
                         for (int i = mess.length - 1; i >= 0; i--) {
-                            listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+                            //listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
                     }
                     if(mess.length!=0) {
