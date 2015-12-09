@@ -7,7 +7,7 @@ var logFile = log4js.getLogger('files');
 var mconnection = mysqlConnection.connection;
 var dataH = eventHandlers.dataH;
 
-var HOST = '172.20.205.88';
+var HOST = '192.168.0.101';
 var PORT = 3000;
 
 //Создаем экземпляр сервера
@@ -50,7 +50,7 @@ var server = net.createServer(function(sock) {
     //Обработчик события 'close'. То есть, когда клиент закрыл соединение
     sock.on('close', function(data) {
         logger.trace('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
-        logger.trace();
+        logger.trace('\n\n\n');
     });
 
 
