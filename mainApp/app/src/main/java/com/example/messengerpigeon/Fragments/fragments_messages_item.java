@@ -45,7 +45,7 @@ public class fragments_messages_item extends Fragment {
     boolean WhiteFlag = false;
     private Toolbar toolbar;
 
-
+    boolean alreadyAtTop=false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arg = this.getArguments();
@@ -69,10 +69,11 @@ public class fragments_messages_item extends Fragment {
                                  int totalItemCount) {
                 //Algorithm to check if the last item is visible or not
                 final int lastItem = totalItemCount - firstVisibleItem;
-                if (!WhiteFlag) {
+                if (!alreadyAtTop) {
                     if (lastItem == totalItemCount && totalItemCount != 0) {
                         // you have reached end of list, load more data
                         System.out.println("popali");
+                        alreadyAtTop=true;
                         loadMore();
                     }
                 }
@@ -167,6 +168,7 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                 int top = (v == null) ? 0 : v.getTop();
 
                 listViewHistory.setSelectionFromTop(index, top);
+                    alreadyAtTop=false;
 
             } else if (Objects.equals(request.getRequestType(), "send")) {
                 System.out.println(request.getResponse());
