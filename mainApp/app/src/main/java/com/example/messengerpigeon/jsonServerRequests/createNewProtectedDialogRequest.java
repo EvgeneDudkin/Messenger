@@ -1,8 +1,5 @@
 package com.example.messengerpigeon.jsonServerRequests;
 
-import com.example.messengerpigeon.miniClasses.dialog;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,45 +8,38 @@ import java.util.Objects;
 /**
  * Created by Пользователь on 08.12.2015.
  */
-public class listDialogsRequest extends jsonServerRequests {
+public class createNewProtectedDialogRequest extends jsonServerRequests {
     /**
-            * Токен, который вернул сервер
-    */
-    private static String token = "";
+     * Токен, который вернул сервер
+     */
+    private String token = "";
+    public String id = "";
     /**
      * Список друзей
      */
-    public static dialog[] dialogs = null;
+    public static String answer = null;
 
     /**
      * Пустой конструктор
      */
-    public listDialogsRequest() {
+    public createNewProtectedDialogRequest() {
 
     }
 
-    public static String MyLogin="";
-
     /**
-     * Конструктор
+     *
+     * @param token
+     * @throws JSONException
      */
-    public listDialogsRequest(String token) throws JSONException {
+    public void createRequest(String token,String nameProtectedDialog, String id, String publicKey1, String publicKey2) throws JSONException {
         JSONObject obj = new JSONObject();
-        JSONObject auth = new JSONObject();
-        auth.put("token", token);
-        obj.put("dialogsL", auth);
-        strRequest = obj.toString();
-        jsonRequest = obj;
-    }
-
-    /**
-     * Метод создания запроса
-     */
-    public void createRequest(String token) throws JSONException {
-        JSONObject obj = new JSONObject();
-        JSONObject auth = new JSONObject();
-        auth.put("token", token);
-        obj.put("dialogsL", auth);
+        JSONObject req = new JSONObject();
+        req.put("token", token);
+        req.put("dialogName", nameProtectedDialog);
+        req.put("idRecipient", id);
+        req.put("publicKey1", publicKey1);
+        req.put("publicKey2", publicKey2);
+        obj.put("createPD", req);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
@@ -60,21 +50,15 @@ public class listDialogsRequest extends jsonServerRequests {
      * override Обработчик ответа сервера
      * @param input Строка, которую вернул сервер
      */
-    public void responseHandler(String input) {
+    public  void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
             response = ret.get("response").toString();
-
+            id = ret.get("id").toString();
             response = Objects.equals(response, "OK") ? response : response.substring(6);
-            JSONArray jsonDialogs = ret.getJSONArray("dialogs");
-            dialogs = new dialog[jsonDialogs.length()];
-            for (int i = 0; i < jsonDialogs.length(); i++) {
-                dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
-            }
         } catch (Exception ignored) {
             token = "";
             response = "j1";
-            dialogs = null;
         }
     }
 
@@ -104,7 +88,7 @@ public class listDialogsRequest extends jsonServerRequests {
      * Геттер токена
      * @return токен
      */
-    public static String getToken() {
+    public String getToken() {
         return token;
     }
 
@@ -115,14 +99,12 @@ public class listDialogsRequest extends jsonServerRequests {
     public String getResponse() {
         return response;
     }
-
     /**
      * Геттер списка друзей
      * @return список друзей
      */
-    public static dialog[] getDialogs() {
-        return dialogs;
-    }
 
-    public final static String getMyLogin(){return MyLogin;}
+    public String getID() {
+        return id;
+    }
 }

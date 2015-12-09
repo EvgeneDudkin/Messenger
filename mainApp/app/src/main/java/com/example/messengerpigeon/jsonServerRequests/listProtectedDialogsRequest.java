@@ -1,6 +1,6 @@
 package com.example.messengerpigeon.jsonServerRequests;
 
-import com.example.messengerpigeon.miniClasses.dialog;
+import com.example.messengerpigeon.miniClasses.protectedDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Created by Пользователь on 08.12.2015.
  */
-public class listDialogsRequest extends jsonServerRequests {
+public class listProtectedDialogsRequest extends jsonServerRequests {
     /**
             * Токен, который вернул сервер
     */
@@ -19,12 +19,12 @@ public class listDialogsRequest extends jsonServerRequests {
     /**
      * Список друзей
      */
-    public static dialog[] dialogs = null;
+    public static protectedDialog[] protectedDialogs = null;
 
     /**
      * Пустой конструктор
      */
-    public listDialogsRequest() {
+    public listProtectedDialogsRequest() {
 
     }
 
@@ -33,11 +33,11 @@ public class listDialogsRequest extends jsonServerRequests {
     /**
      * Конструктор
      */
-    public listDialogsRequest(String token) throws JSONException {
+    public listProtectedDialogsRequest(String token) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
         auth.put("token", token);
-        obj.put("dialogsL", auth);
+        obj.put("dialogsLPE", auth);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
@@ -49,11 +49,10 @@ public class listDialogsRequest extends jsonServerRequests {
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
         auth.put("token", token);
-        obj.put("dialogsL", auth);
+        obj.put("dialogsLPE", auth);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
-
 
 
     /**
@@ -67,14 +66,14 @@ public class listDialogsRequest extends jsonServerRequests {
 
             response = Objects.equals(response, "OK") ? response : response.substring(6);
             JSONArray jsonDialogs = ret.getJSONArray("dialogs");
-            dialogs = new dialog[jsonDialogs.length()];
+            protectedDialogs = new protectedDialog[jsonDialogs.length()];
             for (int i = 0; i < jsonDialogs.length(); i++) {
-                dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
+                protectedDialogs[i] = new protectedDialog(jsonDialogs.getJSONObject(i));
             }
         } catch (Exception ignored) {
             token = "";
             response = "j1";
-            dialogs = null;
+            protectedDialogs = null;
         }
     }
 
@@ -120,8 +119,8 @@ public class listDialogsRequest extends jsonServerRequests {
      * Геттер списка друзей
      * @return список друзей
      */
-    public static dialog[] getDialogs() {
-        return dialogs;
+    public static protectedDialog[] getProtectedDialogs() {
+        return protectedDialogs;
     }
 
     public final static String getMyLogin(){return MyLogin;}

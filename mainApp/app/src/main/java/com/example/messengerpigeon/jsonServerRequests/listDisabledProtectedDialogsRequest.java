@@ -1,6 +1,7 @@
 package com.example.messengerpigeon.jsonServerRequests;
 
-import com.example.messengerpigeon.miniClasses.dialog;
+import com.example.messengerpigeon.miniClasses.disabledProtectedDialog;
+import com.example.messengerpigeon.miniClasses.protectedDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,33 +12,33 @@ import java.util.Objects;
 /**
  * Created by Пользователь on 08.12.2015.
  */
-public class listDialogsRequest extends jsonServerRequests {
+public class listDisabledProtectedDialogsRequest extends jsonServerRequests {
     /**
-            * Токен, который вернул сервер
-    */
+     * Токен, который вернул сервер
+     */
     private static String token = "";
     /**
      * Список друзей
      */
-    public static dialog[] dialogs = null;
+    public static disabledProtectedDialog[] disabledProtectedDialogs = null;
 
     /**
      * Пустой конструктор
      */
-    public listDialogsRequest() {
+    public listDisabledProtectedDialogsRequest() {
 
     }
 
-    public static String MyLogin="";
+    public static String MyLogin = "";
 
     /**
      * Конструктор
      */
-    public listDialogsRequest(String token) throws JSONException {
+    public listDisabledProtectedDialogsRequest(String token) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
         auth.put("token", token);
-        obj.put("dialogsL", auth);
+        obj.put("dialogsLPD", auth);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
@@ -49,15 +50,15 @@ public class listDialogsRequest extends jsonServerRequests {
         JSONObject obj = new JSONObject();
         JSONObject auth = new JSONObject();
         auth.put("token", token);
-        obj.put("dialogsL", auth);
+        obj.put("dialogsLPD", auth);
         strRequest = obj.toString();
         jsonRequest = obj;
     }
 
 
-
     /**
      * override Обработчик ответа сервера
+     *
      * @param input Строка, которую вернул сервер
      */
     public void responseHandler(String input) {
@@ -67,19 +68,20 @@ public class listDialogsRequest extends jsonServerRequests {
 
             response = Objects.equals(response, "OK") ? response : response.substring(6);
             JSONArray jsonDialogs = ret.getJSONArray("dialogs");
-            dialogs = new dialog[jsonDialogs.length()];
+            disabledProtectedDialogs = new disabledProtectedDialog[jsonDialogs.length()];
             for (int i = 0; i < jsonDialogs.length(); i++) {
-                dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
+                disabledProtectedDialogs[i] = new disabledProtectedDialog(jsonDialogs.getJSONObject(i));
             }
         } catch (Exception ignored) {
             token = "";
             response = "j1";
-            dialogs = null;
+            disabledProtectedDialogs = null;
         }
     }
 
     /**
      * override Обработчик ошибок.
+     *
      * @throws Exception
      */
     public void errorHandler() throws Exception {
@@ -102,6 +104,7 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * Геттер токена
+     *
      * @return токен
      */
     public static String getToken() {
@@ -110,6 +113,7 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * Геттер реакции сервера
+     *
      * @return реакция сервера
      */
     public String getResponse() {
@@ -118,11 +122,14 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * Геттер списка друзей
+     *
      * @return список друзей
      */
-    public static dialog[] getDialogs() {
-        return dialogs;
+    public static disabledProtectedDialog[] getProtectedDialogs() {
+        return disabledProtectedDialogs;
     }
 
-    public final static String getMyLogin(){return MyLogin;}
+    public final static String getMyLogin() {
+        return MyLogin;
+    }
 }

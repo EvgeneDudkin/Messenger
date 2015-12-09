@@ -1,6 +1,5 @@
 package com.example.messengerpigeon.miniClasses;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.messengerpigeon.MainActivity;
@@ -13,19 +12,26 @@ import org.json.JSONObject;
  */
 
 
-public class dialog {
+public class disabledProtectedDialog {
     public int Id;
     public String Name;
     public String Login;
+    public String Status;
 
-    public dialog(JSONObject fr) throws JSONException {
+    public disabledProtectedDialog(JSONObject fr) throws JSONException {
         Name = fr.isNull("name") ? "" : fr.getString("name");
         Id = fr.getInt("id");
-        Login=fr.get("login").toString();
+        Login = fr.get("login").toString();
+        Status = fr.get("status").toString();
+
     }
 
-    public String getName(){
-        if(Name.equals("")) return Login;
+    public String getName() {
+        if (Name.equals("")) return Login;
         return Name;
+    }
+
+    public String getStatus() {
+        return Status;
     }
 }
