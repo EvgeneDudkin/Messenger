@@ -9,7 +9,10 @@ import android.widget.TextView;
 
 import com.example.messengerpigeon.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Пользователь on 20.11.2015.
@@ -40,7 +43,9 @@ public class MessagesListAdapter extends ArrayAdapter<Messages_Item> {
 
         tvTitle.setText(navItem.getNameFriend());
         navIcon.setImageResource(navItem.getResIcon());
-        lsMess.setText(navItem.getMessDialog());
+        DateFormat format = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z", Locale.ENGLISH);
+        String sDate=format.format(navItem.getDate());
+        lsMess.setText(sDate);
 
         return v;
     }

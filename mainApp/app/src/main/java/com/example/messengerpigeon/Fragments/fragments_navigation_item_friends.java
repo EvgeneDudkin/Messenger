@@ -85,6 +85,7 @@ public class fragments_navigation_item_friends extends Fragment {
 
         } else {
             for (int i = 0; i < l; i++) {
+                true_false=true;
                 listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.drawable.account, listFriends[i].Login));
             }
         }

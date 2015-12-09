@@ -6,6 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -68,6 +72,9 @@ public class listDialogsRequest extends jsonServerRequests {
             for (int i = 0; i < jsonDialogs.length(); i++) {
                 dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
             }
+            List<dialog> dialogList= Arrays.asList(dialogs);
+            Collections.sort(dialogList);
+            dialogList.toArray(dialogs);
         } catch (Exception ignored) {
             token = "";
             response = "j1";

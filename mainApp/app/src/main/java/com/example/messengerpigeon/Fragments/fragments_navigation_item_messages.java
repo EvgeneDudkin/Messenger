@@ -2,8 +2,11 @@ package com.example.messengerpigeon.Fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +31,11 @@ import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public class fragments_navigation_item_messages extends Fragment {
+public class fragments_navigation_item_messages extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     TextView text;
     int countDialog;
 
@@ -42,17 +47,44 @@ public class fragments_navigation_item_messages extends Fragment {
 
     listDialogsRequest req = new listDialogsRequest();
 
+    private SwipeRefreshLayout mSwipeLayout;
+    boolean RedFlag=true;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-         v = inflater.inflate(R.layout.fragment_messages, container, false);
+        v = inflater.inflate(R.layout.fragment_messages, container, false);
 
         AuthTask at = new AuthTask();
         at.execute(authRequest.getToken());
 
+        mSwipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.refresh);
+        mSwipeLayout.setOnRefreshListener(this);
 
         return v;
     }
+
+    @Override
+    public void onRefresh() {
+        Log.d("my_tag", "refresh");
+        System.out.println("test " + RedFlag);
+        listMessItem.clear();
+        AuthTask at = new AuthTask();
+        at.execute(authRequest.getToken());
+        // stop refresh
+        if(RedFlag) {
+            mSwipeLayout.setRefreshing(false);
+            System.out.println();
+        }
+
+    }
+
+    /*public class CustomComparator implements Comparator<Messages_Item> {
+        @Override
+        public int compare(Messages_Item o1, Messages_Item o2) {
+            return o1.getDate().compareTo(o2.getDate());
+        }
+    }*/
 
     private void initListDialog() {
         final dialog[] dialog = req.getDialogs();
@@ -62,8 +94,11 @@ public class fragments_navigation_item_messages extends Fragment {
 
         listMessItem = new ArrayList<Messages_Item>();
         for (int i = 0; i < countDialog; i++) {
-            listMessItem.add(new Messages_Item(dialog[i].getName(), R.drawable.account, dialog[i].Login));
+            listMessItem.add(new Messages_Item(dialog[i].getName(), R.drawable.account, dialog[i].Login, dialog[i].date));
+            /*Collections.sort(listMessItem, new CustomComparator());*/
         }
+
+
 
         MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getActivity(),
                 R.layout.item_messages, listMessItem);
@@ -97,6 +132,9 @@ public class fragments_navigation_item_messages extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             listDialogsRequest = new listDialogsRequest();
+
+            RedFlag=true;
+            System.out.println("pre "+RedFlag);
         }
 
         @Override
@@ -107,6 +145,8 @@ public class fragments_navigation_item_messages extends Fragment {
                 listDialogsRequest.responseHandler(ret);
                 listDialogsRequest.errorHandler();
                 initListDialog();
+                RedFlag=false;
+                System.out.println("post "+RedFlag);
             } catch (Exception e) {
                 e.printStackTrace();
             }

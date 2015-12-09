@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 /**
  * Created by Пользователь on 16.11.2015.
@@ -38,6 +39,8 @@ public class Activity_reg extends AppCompatActivity{
     private EditText text_login;
     private EditText text_password1;
     private EditText text_password2;
+    private EditText text_name;
+    private EditText text_secondName;
     View focus=null;
 
     LoginPasswordValidator loginPasswordValidator;
@@ -54,6 +57,8 @@ public class Activity_reg extends AppCompatActivity{
         text_login=(EditText)findViewById(R.id.text_login);
         text_password1=(EditText)findViewById(R.id.text_password1);
         text_password2=(EditText)findViewById(R.id.text_password2);
+        text_name=(EditText)findViewById(R.id.text_profile_first_name);
+        text_secondName=(EditText)findViewById(R.id.text_profile_second_name);
 
 
         /*Window window = getWindow();
@@ -68,6 +73,21 @@ public class Activity_reg extends AppCompatActivity{
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
 
+    }
+
+    private boolean checkName(String name, String secondName){
+        if(name.length()<1){
+            text_name.setError("Введите имя");
+            focus=text_name;
+            return false;
+        }
+        else if(secondName.length()<1){
+            text_secondName.setError("Введите фамилию");
+            focus=text_secondName;
+            return false;
+        }
+        else
+            return true;
     }
 
     private boolean checkLogin(String login) {
@@ -118,11 +138,13 @@ public class Activity_reg extends AppCompatActivity{
             switch (v.getId()) {
                 case R.id.button_entry:
                     RegTask at = new RegTask();
+                    String name=text_name.getText().toString();
+                    String surname=text_secondName.getText().toString();
                     String login = text_login.getText().toString();
                     String pass1 = text_password1.getText().toString();
                     String pass2 = text_password2.getText().toString();
                     loginPasswordValidator = new LoginPasswordValidator();
-                    if (!checkLogin(login)||!checkPass(pass1,pass2)) {
+                    if (!checkLogin(login)||!checkPass(pass1,pass2)||!checkName(name,surname)) {
                        focus.requestFocus();
                     } else {
                         at.execute(login, pass1);

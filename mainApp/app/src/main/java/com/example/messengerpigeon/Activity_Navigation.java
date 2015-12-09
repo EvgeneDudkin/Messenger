@@ -89,7 +89,6 @@ public class Activity_Navigation extends AppCompatActivity {
         listFragments.add(new fragment_protected_messages());
         listFragments.add(new fragments_navigation_item_setting());
 
-
         //load first fragment as default:
         //FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager = getSupportFragmentManager();
