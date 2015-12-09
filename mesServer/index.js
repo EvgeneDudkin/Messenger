@@ -2,28 +2,26 @@ var net = require('net'),
 eventHandlers = require('./eventHandlers'),
 mysqlConnection = require('./mysqlConnection');
 var log4js = require('./log4js');
-var logger = log4js.getLogger();
+var logger = log4js.getLogger('cons');
+var logFile = log4js.getLogger('files');
 var mconnection = mysqlConnection.connection;
 var dataH = eventHandlers.dataH;
 
-var HOST = '192.168.0.101';
+var HOST = '172.20.205.88';
 var PORT = 3000;
 
-//Создаем экземпляр сервера
-//Функция внутри - обработчик события 'connection' (то есть, когда к серверу осуществляется подключение)
+//РЎРѕР·РґР°РµРј СЌРєР·РµРјРїР»СЏСЂ СЃРµСЂРІРµСЂР°
+//Р¤СѓРЅРєС†РёСЏ РІРЅСѓС‚СЂРё - РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ 'connection' (С‚Рѕ РµСЃС‚СЊ, РєРѕРіРґР° Рє СЃРµСЂРІРµСЂСѓ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ РїРѕРґРєР»СЋС‡РµРЅРёРµ)
 var server = net.createServer(function(sock) {
     var bDATA = false;
     var stop = null;
     var length = 0;
     var str = "";
-    //Отчет, о том что кто-то приконектился
+    //РћС‚С‡РµС‚, Рѕ С‚РѕРј С‡С‚Рѕ РєС‚Рѕ-С‚Рѕ РїСЂРёРєРѕРЅРµРєС‚РёР»СЃСЏ
     //console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
     logger.trace();
-    logger.trace();
-    logger.trace("=================================");
     logger.trace('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
-    logger.trace("=================================");
-    //Обработчик собтия 'data'. То есть клиент передает какие-то данные
+    //РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‚РёСЏ 'data'. РўРѕ РµСЃС‚СЊ РєР»РёРµРЅС‚ РїРµСЂРµРґР°РµС‚ РєР°РєРёРµ-С‚Рѕ РґР°РЅРЅС‹Рµ
     sock.on('data', function(data) {
         if(bDATA) {
             //logger.debug(data.toString());
@@ -33,10 +31,10 @@ var server = net.createServer(function(sock) {
             }
         }
         else {
-            logger.debug(data);
+            logFile.debug(data);
             length = parseInt(data.toString());
 
-            logger.debug(length);
+            logFile.debug(length);
             if(isNaN(length)) {
                 logger.error("NAN");
                 sock.destroy();
@@ -49,12 +47,9 @@ var server = net.createServer(function(sock) {
         bDATA = true;
     });*/
 
-    //Обработчик события 'close'. То есть, когда клиент закрыл соединение
+    //РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ 'close'. РўРѕ РµСЃС‚СЊ, РєРѕРіРґР° РєР»РёРµРЅС‚ Р·Р°РєСЂС‹Р» СЃРѕРµРґРёРЅРµРЅРёРµ
     sock.on('close', function(data) {
-        logger.trace("=================================");
         logger.trace('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
-        logger.trace("=================================");
-        logger.trace();
         logger.trace();
     });
 
@@ -63,7 +58,7 @@ var server = net.createServer(function(sock) {
         sock.destroy();
     });
 
-    //Если после 10 сек после connection не пришла какая нибудь информация, удаляем socket
+    //Р•СЃР»Рё РїРѕСЃР»Рµ 10 СЃРµРє РїРѕСЃР»Рµ connection РЅРµ РїСЂРёС€Р»Р° РєР°РєР°СЏ РЅРёР±СѓРґСЊ РёРЅС„РѕСЂРјР°С†РёСЏ, СѓРґР°Р»СЏРµРј socket
     sock.setTimeout(10000);
 
     sock.on('timeout', function(data) {
@@ -77,7 +72,7 @@ var server = net.createServer(function(sock) {
     }
 });
 
-//Начинаем прослушитьвать данный хост:порт
+//РќР°С‡РёРЅР°РµРј РїСЂРѕСЃР»СѓС€РёС‚СЊРІР°С‚СЊ РґР°РЅРЅС‹Р№ С…РѕСЃС‚:РїРѕСЂС‚
 server.listen(PORT, HOST);
 
 
