@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class fragments_navigation_item_messages extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     TextView text;
@@ -77,7 +78,12 @@ public class fragments_navigation_item_messages extends Fragment implements Swip
 
         listMessItem = new ArrayList<Messages_Item>();
         for (int i = 0; i < countDialog; i++) {
-            listMessItem.add(new Messages_Item(dialog[i].getName(), R.mipmap.ic_account, dialog[i].Login));
+            if (Objects.equals(dialog[i].LastMsg, "null")) {
+                listMessItem.add(new Messages_Item(dialog[i].getName(), R.mipmap.ic_account, "Диалог пуст", dialog[i].getDate()));
+            }
+            else {
+                listMessItem.add(new Messages_Item(dialog[i].getName(), R.mipmap.ic_account, dialog[i].Login + ": " + dialog[i].getLastMsg(), dialog[i].getDate()));
+            }
         }
 
         MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getActivity(),

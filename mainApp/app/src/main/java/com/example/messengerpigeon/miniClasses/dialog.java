@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by Kirill2 on 16.11.2015.
@@ -24,6 +25,7 @@ public class dialog implements Comparable<dialog> {
     public String Name;
     public String Login;
     public Date date;
+    public String LastMsg;
 
     public dialog(JSONObject fr) throws JSONException {
         Name = fr.isNull("name") ? "" : fr.getString("name");
@@ -53,11 +55,34 @@ public class dialog implements Comparable<dialog> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        LastMsg = fr.get("msg").toString();
     }
 
     public String getName() {
         if (Name.equals("")) return Login;
         return Name;
+    }
+
+    public String getDate(){
+        Date now=new Date();
+        if (date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            return sdf.format(date);
+        }
+        else{
+            SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+            return sdf.format(date);
+        }
+    }
+
+    public String getLastMsg(){
+        if (Objects.equals(LastMsg, "null")){
+            System.out.println("pusto");
+            return "Нет сообщений";
+        }
+        else {
+            return LastMsg;
+        }
     }
 
     public int compareTo(dialog o) {

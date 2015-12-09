@@ -30,7 +30,7 @@
 
             android:text="10:40"
             android:textColor="@color/colorTextSecondary"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 
