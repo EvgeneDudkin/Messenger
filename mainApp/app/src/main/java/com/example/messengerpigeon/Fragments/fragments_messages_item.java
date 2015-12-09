@@ -30,7 +30,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,7 +51,8 @@ public class fragments_messages_item extends Fragment {
     View vv = null;
     boolean WhiteFlag = false;
 
-    boolean alreadyAtTop=false;
+    boolean alreadyAtTop = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arg = this.getArguments();
@@ -77,7 +80,7 @@ public class fragments_messages_item extends Fragment {
                     if (lastItem == totalItemCount && totalItemCount != 0) {
                         // you have reached end of list, load more data
                         System.out.println("popali");
-                        alreadyAtTop=true;
+                        alreadyAtTop = true;
                         loadMore();
                     }
                 }
@@ -143,13 +146,34 @@ public class fragments_messages_item extends Fragment {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
                     WhiteFlag = mess.length == 0;
+                    Date now = new Date();
                     if (listHistoryItem.size() != 0) {
                         for (int i = 0; i < mess.length; ++i) {
-                            listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+
+                            //listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
                     } else {
                         for (int i = mess.length - 1; i >= 0; i--) {
-                            listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+                            //listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
                     }
                     HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
@@ -161,7 +185,7 @@ public class fragments_messages_item extends Fragment {
                     int top = (v == null) ? 0 : v.getTop();
 
                     listViewHistory.setSelectionFromTop(index, top);
-                    alreadyAtTop=false;
+                    alreadyAtTop = false;
 
                 } else if (Objects.equals(request.getRequestType(), "send")) {
                     System.out.println(request.getResponse());
