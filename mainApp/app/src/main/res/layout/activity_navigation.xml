@@ -10,7 +10,8 @@
     <!--Main content (main screen)-->
     <RelativeLayout
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:id="@+id/layout_new_toolbar">
 
         <include
             layout="@layout/toolbar"
