@@ -225,7 +225,7 @@ public class fragment_protected_messages extends Fragment {
                     return sendAndListen(sendMsgReq.getMsgSendRequest());
                 } else if (data[0].equals("oldM")) {
                     oldMReq = new jsonRequest();
-                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId());
+                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId(),-1);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     socket = new Socket(serverAddr, serverInfo.getPort());
                     return sendAndListen(out);
