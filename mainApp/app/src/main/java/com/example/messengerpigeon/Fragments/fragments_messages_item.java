@@ -25,7 +25,9 @@ import com.example.messengerpigeon.serverInfo;
 
 import java.net.InetAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +47,8 @@ public class fragments_messages_item extends Fragment {
     boolean WhiteFlag = false;
     private Toolbar toolbar;
 
-    boolean alreadyAtTop=false;
+    boolean alreadyAtTop = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arg = this.getArguments();
@@ -73,7 +76,7 @@ public class fragments_messages_item extends Fragment {
                     if (lastItem == totalItemCount && totalItemCount != 0) {
                         // you have reached end of list, load more data
                         System.out.println("popali");
-                        alreadyAtTop=true;
+                        alreadyAtTop = true;
                         loadMore();
                     }
                 }
@@ -143,16 +146,42 @@ public class AuthTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(final String ret) {
         try {
 
-            System.out.println(ret);
-            messageRequest request = new messageRequest();
-            request.responseHandler(ret);
-            if (Objects.equals(request.getRequestType(), "list")) {
-                message[] mess = listMsgReq.getMessages();
-                System.out.println(mess);
-                WhiteFlag = mess.length == 0;
-                if (listHistoryItem.size() != 0) {
-                    for (int i = 0; i < mess.length; ++i) {
-                        listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                System.out.println(ret);
+                messageRequest request = new messageRequest();
+                request.responseHandler(ret);
+                if (Objects.equals(request.getRequestType(), "list")) {
+                    message[] mess = listMsgReq.getMessages();
+                    System.out.println(mess);
+                    WhiteFlag = mess.length == 0;
+                    Date now = new Date();
+                    if (listHistoryItem.size() != 0) {
+                        for (int i = 0; i < mess.length; ++i) {
+
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+
+                            //listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                        }
+                    } else {
+                        for (int i = mess.length - 1; i >= 0; i--) {
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+                            //listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                        }
                     }
                 } else {
                     for (int i = mess.length - 1; i >= 0; i--) {
@@ -168,7 +197,7 @@ public class AuthTask extends AsyncTask<String, Void, String> {
                 int top = (v == null) ? 0 : v.getTop();
 
                 listViewHistory.setSelectionFromTop(index, top);
-                    alreadyAtTop=false;
+                    alreadyAtTop = false;
 
             } else if (Objects.equals(request.getRequestType(), "send")) {
                 System.out.println(request.getResponse());

@@ -14,21 +14,13 @@
 
 
         <TextView
-            android:id="@+id/text_other_name_sender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sender:"
-            android:textColor="@color/colorTextPrimary"
-            android:textSize="16sp" />
-
-        <TextView
             android:id="@+id/text_other_mess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxWidth="300dp"
             android:text="hello!\nhow are you?"
-            android:textColor="@color/colorTextSecondary"
-            android:textSize="14sp" />
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/text_other_time_mess"
