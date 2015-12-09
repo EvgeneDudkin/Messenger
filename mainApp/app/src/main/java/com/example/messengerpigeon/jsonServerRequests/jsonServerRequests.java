@@ -20,6 +20,15 @@ public class jsonServerRequests {
      * Строка запроса
      */
     protected String strRequest = "";
+
+
+    protected String strProtectedRequest = "";
+
+    protected JSONObject jsonProtectedRequest = null;
+
+
+
+
     /**
      * JSON объект запроса
      */

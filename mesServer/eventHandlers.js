@@ -9,12 +9,26 @@
  var decrypt = require('./DPcrypt').decrypt;
 
  var log4js = require('./log4js');
- var logger = log4js.getLogger();
+ var logger = log4js.getLogger('files');
+ var logconsole = log4js.getLogger('cons');
 
  function writeAndDestroy(sock, str) {
    logger.info("OUTPUT before encrypt:")
    logger.debug(str);
-
+  // logger.debug(JSON.parse(str));
+   try {
+      var resp = JSON.parse(str);
+      logconsole.info("output");
+      if(resp.response == "OK") {
+         logconsole.info(resp.response);
+      }
+      else {
+         logconsole.error(resp.response);
+      }
+   }
+   catch (err) {
+      logconsole.error(err);
+   }
    var lngth = str.length;
    var salt = Math.floor(Math.random() * (16127 + 1));
    var encStr = new encrypt(lngth, salt);
@@ -76,48 +90,61 @@ function dataHandler(data, sock, conect) {
    logger.debug(query);
    //console.log(query);
    //Авторизация
+   logconsole.info("INPUT:");
    if (query.auth != null) {
+      logconsole.info("auth");
       authRequest(sock, conect, query);
    }
    //Если регистрация
    else if (query.reg != null) {
+      logconsole.info("reg");
       regRequest(sock, conect, query);
    }
    //Запрос на список друзей
    else if (query.friendsL != null) {
+      logconsole.info("firendsL");
       friendsListRequest(sock, conect, query);
    }
    else if (query.onlyFriendsL != null) {
+      logconsole.info("onlyFriendsL");
 
    }
    //Запрос на поиск друзей
    else if (query.friendsS != null) {
+      logconsole.info("friendsS");
       friendsSearchRequest(sock, conect, query);
    }
    //Запрос на запрос дружбы
    else if (query.friendRequest != null) {
+      logconsole.info("friendRequest");
       friendRequest(sock, conect, query);
    }
    //Запрос на список диалогов
    else if (query.dialogsL != null) {
+      logconsole.info("dialogsL");
       dialogsListRequest(sock, conect, query);
    }
    //Запрос на создание диалога
    else if (query.dialogC != null) {
+      logconsole.info("dialogC");
       dialogCreateRequest(sock, conect, query);
    }
    //Запрос на отправку сообщения
    else if (query.sendMsg != null) {
+      logconsole.info("sendMsg");
       sendMsgRequest(sock, conect, query);
    }
    //Запрос на список диалогов
    else if (query.lastNmsg != null) {
+      logconsole.info("lastNmsg");
       lastNmsgRequest(sock, conect, query);
    }
    else if (query.userInfo != null) {
+      logconsole.info("userInfo");
       getUserInfo(sock, conect, query);
    }
    else {
+      logconsole.error("Erorr 2");
       var answer = {response: "Error 2"};
       writeAndDestroy(sock, JSON.stringify(answer));
       sock.destroy();
@@ -950,5 +977,65 @@ function getUserInfo(sock, conect, query) {
       });
    });
 }
+
+function dialogsLPE(sock, conect, query) {
+
+   var answer = {response: "", dialogs: []};
+   //Проверка
+   if (query.dialogsLPE.token == null) {
+      answer.response = "Error dlp1";
+      writeAndDestroy(sock, JSON.stringify(answer));
+      sock.destroy();
+   }
+   //
+   conect.query('SELECT userId from tokens where token="' + query.dialogsLPE.token + '"', function (err, rows) {
+      //Проверка на ошибку
+      if (err) {
+         answer.response = "Error dlp2";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      //Проверка, что такой токен вообще есть
+      if (rows.length === 0) {
+         answer.response = "Error dlp3";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      var id = rows[0]['userId'];
+      //TODO: exists VS where VS join ?!??!?!
+      //Собственно сама выборка диалогов
+      conect.query('SELECT login, dialogs.id, dialogs.name, dialogs.lastUpdate, userdialog.publicKey1, userdialog.publicKey2 from dialogs, users, userdialog where ' +
+         ' dialogId = dialogs.id and userId = users.id and ' +
+         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and dialogs.protected = 1', function (err2, rows2) {
+            if (err2){
+
+               answer.response = "Error dlp4";
+               writeAndDestroy(sock, JSON.stringify(answer));
+               sock.destroy();
+               return;
+            }
+            var dialogsList = [];
+            for (var i = 0; i < rows2.length; i++) {
+               dialogsList[i] = {
+                  id: rows2[i]['id'],
+                  name: rows2[i]['name'],
+                  login: rows2[i]['login'],
+                  publicKey1: rows2[i]['publicKey1'],
+                  publicKey2: rows2[i]['publicKey2'],
+                  date: rows2[i]['lastUpdate'].toString().substring(0, 33)
+               };
+            }
+            answer.response = "OK";
+            answer.dialogs = dialogsList;
+            writeAndDestroy(sock, JSON.stringify(answer));
+            sock.destroy();
+
+         });
+
+   });
+}
+
 
 exports.dataH = dataHandler;
