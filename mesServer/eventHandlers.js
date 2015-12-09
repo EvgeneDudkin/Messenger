@@ -149,11 +149,15 @@ function dataHandler(data, sock, conect) {
    }
    else if (query.dialogsLPE != null) {
       logconsole.info("dialogsLPE");
-      getUserInfo(sock, conect, query);
+      dialogsLPE(sock, conect, query);
    }
    else if (query.acceptPD != null) {
       logconsole.info("acceptPD");
-      getUserInfo(sock, conect, query);
+      acceptPD(sock, conect, query);
+   }
+   else if (query.dialogsLPD != null) {
+      logconsole.info("dialogsLPD");
+      dialogsLPD(sock, conect, query);
    }
    else {
       logconsole.error("Erorr 2");
@@ -589,7 +593,7 @@ function dialogsListRequest(sock, conect, query) {
       //Собственно сама выборка диалогов
       conect.query('SELECT login, dialogs.id, dialogs.name, dialogs.lastUpdate, dialogs.lastLogin , dialogs.lastMsg from dialogs, users, userdialog where ' +
          ' dialogId = dialogs.id and userId = users.id and ' +
-         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ')', function (err2, rows2) {
+         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and protected = 0', function (err2, rows2) {
             if (err2){
 
                answer.response = "Error dl4";
@@ -1037,9 +1041,9 @@ function dialogsLPE(sock, conect, query) {
       //Собственно сама выборка диалогов
       conect.query('SELECT login, dialogs.id, dialogs.name, dialogs.lastUpdate, userdialog.publicKey1, userdialog.publicKey2 from dialogs, users, userdialog where ' +
          ' dialogId = dialogs.id and userId = users.id and ' +
-         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and dialogs.enabled=1 and dialogs.protected = 1', function (err2, rows2) {
+         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and dialogs.enable=1 and dialogs.protected = 1', function (err2, rows2) {
             if (err2){
-
+               logconsole.error(err2)
                answer.response = "Error dlp4";
                writeAndDestroy(sock, JSON.stringify(answer));
                sock.destroy();
@@ -1106,14 +1110,24 @@ function createPD(sock, conect, query) {
                   sock.destroy();
                   return;
                }
-               answer.response = "OK";
-               answer.id = rows2.insertId;
-               writeAndDestroy(sock, JSON.stringify(answer));
-               sock.destroy();
-               return;
+               conect.query('INSERT INTO userdialog (userId, dialogId) values ('+query.createPD.idRecipient+', '+rows2.insertId+')', 
+                  function (err4,rows4) { 
+                     if(err4) {
+                        answer.response = "Error dlp6";
+
+                        writeAndDestroy(sock, JSON.stringify(answer));
+                        sock.destroy();
+                        return;
+                     }
+                     answer.response = "OK";
+                     answer.id = rows2.insertId;
+                     writeAndDestroy(sock, JSON.stringify(answer));
+                     sock.destroy();
+                     return;
+                  });
             });
-      })
-   });
+})
+});
 }
 
 function acceptPD(sock, conect, query) {
@@ -1149,7 +1163,7 @@ function acceptPD(sock, conect, query) {
             sock.destroy();
             return;
          }
-         conect.query('INSERT INTO userdialog (userId, dialogId, publicKey1, publicKey2) values ('+id+', '+query.acceptPD.dialogId+', '+query.acceptPD.publicKey1+', '+query.acceptPD.publicKey2+')', function(err3, rows3) {
+         conect.query('update userdialog set publicKey1 = '+query.acceptPD.publicKey1+', publicKey2='+query.acceptPD.publicKey2+') where dialogId = '+query.acceptPD.dialogId+' and userId = ' +id, function(err3, rows3) {
             if (err3) {
                answer.response = "Error apd4";
                writeAndDestroy(sock, JSON.stringify(answer));
@@ -1166,15 +1180,15 @@ function acceptPD(sock, conect, query) {
 }
 
 function dialogsLPD(sock, conect, query) {
-   var answer = {response: "", dialogId: null, dialogName: "", login: "", lastUpdate: null, status: null};
-   if(query.dialogsLPD.token == null || query.dialogsLPD.dialogId ==null ||  query.dialogsLPD.publicKey1 ==null ||  query.dialogsLPD.publicKey1 ==null) {
-      answer.response = "Error apd1";
+   var answer = {response: "", dialogs: []};
+   if(query.dialogsLPD.token == null) {
+      answer.response = "Error dlpd1";
       writeAndDestroy(sock, JSON.stringify(answer));
       sock.destroy();
       return;
    }
 
-   conect.query('SELECT userId from tokens where token="' + query.dialogsLPD.token + '"', function (err, rows) {
+   conect.query('SELECT userId, login from tokens, users where userId = id and token="' + query.dialogsLPD.token + '"', function (err, rows) {
       //Проверка на ошибку
       if (err) {
          answer.response = "Error dlpd2";
@@ -1190,31 +1204,38 @@ function dialogsLPD(sock, conect, query) {
          return;
       }
       var id = rows[0]['userId']; 
-      conect.query('SELECT users.id as userId, login, dialogs.id as dialogId, dialogs.name, dialogs.lastUpdate from dialogs, users, userdialog where ' +
-         ' dialogId = dialogs.id and userId = users.id and ' +
-         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and dialogs.enabled=1 and dialogs.protected = 1', function (err2, rows2) {
-            if (err2){
+      var login = rows[0]['login']; 
+      conect.query('SELECT users.id as userId, login, dialogs.id as dialogId, dialogs.name, dialogs.lastUpdate, isnull(userdialog.publicKey1) as pk from dialogs, users, userdialog where ' +
+        'dialogId = dialogs.id and userId = users.id and ' +
+        '(exists(select * from userdialog where dialogId = dialogs.id and userId = '+id+' and isNull(publicKey1) and isNull(publicKey2)) xor' +
+          ' exists(select * from userdialog where dialogId = dialogs.id and not(userId = '+id+') and isNull(publicKey1) and isNull(publicKey2))) and dialogs.enable=0 and dialogs.protected = 1', function (err2, rows2) {
+         if (err2){
 
-               answer.response = "Error dlpd4";
-               writeAndDestroy(sock, JSON.stringify(answer));
-               sock.destroy();
-               return;
-            }
-            var dialogsList = [];
-            for (var i = 0; i < rows2.length; i++) {
-               dialogsList[i] = {
-                  id: rows2[i]['dialogId'],
-                  name: rows2[i]['name'],
-                  login: rows2[i]['login'],
-                  date: rows2[i]['lastUpdate'].toString().substring(0, 33),
-                  status: rows2[i]['userId'] == id
-               };
-            }
-            answer.response = "OK";
-            answer.dialogs = dialogsList;
+            answer.response = "Error dlpd4";
             writeAndDestroy(sock, JSON.stringify(answer));
             sock.destroy();
-         });
+            return;
+         }
+         //logconsole.debug(rows2);
+         var dialogsList = [];
+         var i = 0;
+         for (var j = 0; j < rows2.length; j++) {
+            if(rows2[j]['login'] == login) continue;
+            //logconsole.debug(i);
+            dialogsList[i] = {
+               id: rows2[j]['dialogId'],
+               name: rows2[j]['name'],
+               login: rows2[j]['login'],
+               date: rows2[j]['lastUpdate'].toString().substring(0, 33),
+               status: !rows2[j]['pk']
+            };
+            i++;
+         }
+         answer.response = "OK";
+         answer.dialogs = dialogsList;
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+      });
 });
 }
 
