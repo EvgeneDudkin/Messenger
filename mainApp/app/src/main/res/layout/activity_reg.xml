@@ -3,12 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorGrey"
     tools:context=".Activity_reg">
-    <!-- android:paddingBottom="@dimen/activity_vertical_margin"
-     android:paddingLeft="@dimen/activity_horizontal_margin"
-     android:paddingRight="@dimen/activity_horizontal_margin"
-     android:paddingTop="@dimen/activity_vertical_margin"-->
 
     <include
         layout="@layout/toolbar_entry_reg"
@@ -18,11 +14,12 @@
         android:id="@+id/text_profile_first_name"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:background="@drawable/round_corner_text"
+        android:background="@color/colorWhite"
         android:hint="Имя"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/toolbar"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="10dp"/>
 
     <ProgressBar
         android:id="@+id/progressBar1"
@@ -39,20 +36,22 @@
         android:ems="10"
         android:id="@+id/text_profile_second_name"
         android:hint = "Фамилия"
-        android:background="@drawable/round_corner_text"
+        android:background="@color/colorWhite"
         android:layout_below="@+id/text_profile_first_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"/>
 
     <EditText
         android:id="@+id/text_login"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:background="@drawable/round_corner_text"
+        android:background="@color/colorWhite"
         android:hint="Логин"
         android:layout_below="@+id/text_profile_second_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"/>
 
     <EditText
         android:layout_width="300dp"
@@ -61,10 +60,11 @@
         android:ems="10"
         android:id="@+id/text_password1"
         android:hint = "Пароль"
-        android:background="@drawable/round_corner_text"
+        android:background="@color/colorWhite"
         android:layout_below="@+id/text_login"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"/>
 
     <EditText
         android:layout_width="300dp"
@@ -73,19 +73,21 @@
         android:ems="10"
         android:id="@+id/text_password2"
         android:hint = "Пароль"
-        android:background="@drawable/round_corner_text"
+        android:background="@color/colorWhite"
         android:layout_below="@+id/text_password1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"/>
 
     <Button
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:text="@string/str_button_reg"
         android:id="@+id/button_entry"
-        android:background="@drawable/round_corner"
+        android:background="@color/colorPrimary"
         android:layout_below="@+id/text_password2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp" />
+        android:layout_marginTop="41dp"
+        android:textColor="@color/colorWhite"/>
 
 </RelativeLayout>

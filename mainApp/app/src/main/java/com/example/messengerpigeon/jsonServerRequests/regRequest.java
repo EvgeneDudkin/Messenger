@@ -24,11 +24,13 @@ public class regRequest extends jsonServerRequests {
      * @param login логин
      * @param pass  пароль
      */
-    public regRequest(String login, String pass) throws JSONException {
+    public regRequest(String login, String pass, String firstName, String secondName) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject reg = new JSONObject();
         reg.put("login", login);
         reg.put("pass", pass);
+        reg.put("firstName",firstName);
+        reg.put("lastName",secondName);
         obj.put("reg", reg);
         strRequest = obj.toString();
         jsonRequest = obj;
@@ -39,11 +41,13 @@ public class regRequest extends jsonServerRequests {
      * @param login логин
      * @param pass пароль
      */
-    public void createRequest(String login, String pass) throws JSONException {
+    public void createRequest(String login, String pass, String firstName, String secondName) throws JSONException {
         JSONObject obj = new JSONObject();
         JSONObject reg = new JSONObject();
         reg.put("login", login);
         reg.put("pass", pass);
+        reg.put("firstName",firstName);
+        reg.put("lastName",secondName);
         obj.put("reg", reg);
         strRequest = obj.toString();
         jsonRequest = obj;

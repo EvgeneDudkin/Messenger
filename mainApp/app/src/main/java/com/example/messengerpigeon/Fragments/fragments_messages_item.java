@@ -30,7 +30,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,7 +51,12 @@ public class fragments_messages_item extends Fragment {
     View vv = null;
     boolean WhiteFlag = false;
 
+    boolean alreadyAtTop = false;
 
+    boolean scrolling=false;
+    boolean alreadyAtBottom=false;
+    boolean messagesLoaded=false;
+    int align=0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle arg = this.getArguments();
@@ -72,12 +79,27 @@ public class fragments_messages_item extends Fragment {
                                  int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
                 //Algorithm to check if the last item is visible or not
-                final int lastItem = totalItemCount - firstVisibleItem;
-                if (!WhiteFlag) {
-                    if (lastItem == totalItemCount && totalItemCount != 0) {
-                        // you have reached end of list, load more data
-                        System.out.println("popali");
-                        loadMore();
+                if(messagesLoaded) {
+                    System.out.println(firstVisibleItem + " asdasd " + (totalItemCount));
+                    int lastItem = totalItemCount - firstVisibleItem;
+                    if (!alreadyAtTop) {
+                        if (lastItem == totalItemCount && totalItemCount != 0) {
+                            // you have reached end of list, load more data
+                            System.out.println("popali");
+                            alreadyAtTop = true;
+                            align = 1;
+                            loadOldHistory();
+                        }
+                    }
+                    if (!alreadyAtBottom && scrolling) {
+                        //CHTO ZA PYAT???????????
+                        if (firstVisibleItem + 5 == totalItemCount && totalItemCount != 0) {
+                            // you have reached end of list, load more data
+                            System.out.println("popali2");
+                            alreadyAtBottom = true;
+                            align = -1;
+                            loadNewMessages();
+                        }
                     }
                 }
             }
@@ -85,6 +107,12 @@ public class fragments_messages_item extends Fragment {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 //blank, not using this
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    scrolling = false;
+                    alreadyAtBottom = false;
+                } else if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                    scrolling = true;
+                }
             }
         });
         return vv;
@@ -110,12 +138,14 @@ public class fragments_messages_item extends Fragment {
         }
     };
 
-    public void loadMore() {
-
-
+    public void loadOldHistory() {
         AuthTask at = new AuthTask();
         at.execute("oldM", authReq.getToken(), dialogID, "15");
-
+    }
+    public void loadNewMessages()
+    {
+        AuthTask at = new AuthTask();
+        at.execute("newM", authReq.getToken(), dialogID, "15");
     }
 
     public class AuthTask extends AsyncTask<String, Void, String> {
@@ -141,25 +171,65 @@ public class fragments_messages_item extends Fragment {
                 if (Objects.equals(request.getRequestType(), "list")) {
                     message[] mess = listMsgReq.getMessages();
                     System.out.println(mess);
-                    WhiteFlag = mess.length == 0;
+
+                    Date now = new Date();
                     if (listHistoryItem.size() != 0) {
+                        if(alreadyAtTop && align==1) {
                         for (int i = 0; i < mess.length; ++i) {
-                            listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+
+                            //listHistoryItem.add(0, new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
+                        }
+                        else
+                        if(alreadyAtBottom && align==-1)
+                        {
+                            for (int i = mess.length - 1; i >= 0; i--) {
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                            }
+                        }
+
                     } else {
                         for (int i = mess.length - 1; i >= 0; i--) {
-                            listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
+                            if (mess[i].date.getTime() + (1000 * 60 * 60 * 24) - (1000 * 60 * 60 * 4) > now.getTime()) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("d MMM");
+                                String str = sdf.format(mess[i].date);
+                                listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, str, mess[i].messageID));
+                            }
+                            //listHistoryItem.add(new History_Item(mess[i].login, mess[i].text, mess[i].date.toString(), mess[i].messageID));
                         }
                     }
-                    HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
+                    if(mess.length!=0) {
+                        HistoryListAdapter messagesListAdapter = new HistoryListAdapter(getActivity(), 1, listHistoryItem);
 
-                    listViewHistory.setAdapter(messagesListAdapter);
+                        listViewHistory.setAdapter(messagesListAdapter);
 
-                    int index = listViewHistory.getFirstVisiblePosition() + mess.length;
-                    View v = listViewHistory.getChildAt(listViewHistory.getHeaderViewsCount());
-                    int top = (v == null) ? 0 : v.getTop();
-
-                    listViewHistory.setSelectionFromTop(index, top);
+                        int index = listViewHistory.getFirstVisiblePosition() + mess.length;
+                        View v = listViewHistory.getChildAt(listViewHistory.getHeaderViewsCount());
+                        int top = (v == null) ? 0 : v.getTop();
+                        if(align!=-1)
+                        listViewHistory.setSelectionFromTop(index, top);
+                    }
+                    if(align==1)
+                        alreadyAtTop = mess.length == 0;
+                    else
+                    if(align==-1)
+                        alreadyAtBottom= mess.length == 0;
+                    align=0;
+                    messagesLoaded=true;
 
                 } else if (Objects.equals(request.getRequestType(), "send")) {
                     System.out.println(request.getResponse());
@@ -223,11 +293,21 @@ public class fragments_messages_item extends Fragment {
                     return sendAndListen(sendMsgReq.getMsgSendRequest());
                 } else if (data[0].equals("oldM")) {
                     oldMReq = new jsonRequest();
-                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId());
+                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null, listHistoryItem.get(0).getMessageId(),-1);
+                    System.out.println(out);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
                     socket = new Socket(serverAddr, serverInfo.getPort());
                     return sendAndListen(out);
-                } else
+                }
+                else if (data[0].equals("newM")) {
+                    oldMReq = new jsonRequest();
+                    String out = oldMReq.lastNmsgRequest(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), null,-1, listHistoryItem.get(listHistoryItem.size()-1).getMessageId());
+                    System.out.println(out);
+                    InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                    socket = new Socket(serverAddr, serverInfo.getPort());
+                    return sendAndListen(out);
+                }
+                else
                     return sendAndListen("");
             } catch (Exception e) {
                 e.printStackTrace();

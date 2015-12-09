@@ -18,7 +18,7 @@ public class HistoryListAdapter extends ArrayAdapter<History_Item> {
     Context context;
     int resLayout;
     List<History_Item> listHistItems;
-    String str;;
+    String str;
     authRequest authReq=new authRequest();
     public HistoryListAdapter(Context context, int idl, List<History_Item> history_items) {
         super(context, idl, history_items);
@@ -30,7 +30,6 @@ public class HistoryListAdapter extends ArrayAdapter<History_Item> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        TextView nameSender;
         TextView tvTitle;
         TextView lsMess;
         String login=authReq.getMyLogin();
@@ -47,18 +46,15 @@ public class HistoryListAdapter extends ArrayAdapter<History_Item> {
         View v = View.inflate(context,resLayout,null);
 
         if(resLayout==R.layout.item_mess_me){
-            nameSender=(TextView)v.findViewById(R.id.text_me_name_sender);
             tvTitle = (TextView) v.findViewById(R.id.text_me_mess);
             lsMess=(TextView)v.findViewById(R.id.text_me_time);
         }
         else{
-            nameSender=(TextView)v.findViewById(R.id.text_other_name_sender);
             tvTitle = (TextView) v.findViewById(R.id.text_other_mess);
             lsMess=(TextView)v.findViewById(R.id.text_other_time_mess);
         }
         History_Item navItem = listHistItems.get(position);
 
-        nameSender.setText(navItem.getName_sender());
         tvTitle.setText(navItem.getMessage_one());
         lsMess.setText(navItem.getTime_send());
 

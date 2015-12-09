@@ -76,13 +76,8 @@ public class jsonCrypt {
             JSONObject ret = new JSONObject(text);
             int length = ret.getInt("key");
             salt = ret.getInt("salt");
-            System.out.println("WTFBROO");
             String encrypt_text = ret.getString("query");
-            System.out.println("WTFBROO2");
-            System.out.println(ret);
-            System.out.println(encrypt_text);
             text = Decrypt(encrypt_text, length);
-            System.out.println(text);
         } catch (Exception e) {
             e.printStackTrace();
         }

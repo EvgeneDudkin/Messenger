@@ -1,5 +1,6 @@
 package com.example.messengerpigeon.Fragments;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,17 +13,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.Pair;
+import com.example.messengerpigeon.Encryption.RSACrypt;
 import com.example.messengerpigeon.Encryption.jsonCrypt;
+import com.example.messengerpigeon.MainActivity;
 import com.example.messengerpigeon.R;
 import com.example.messengerpigeon.jsonServerRequests.addFriendRequest;
 import com.example.messengerpigeon.jsonServerRequests.authRequest;
-import com.example.messengerpigeon.jsonServerRequests.createNewDialogRequest;
+import com.example.messengerpigeon.jsonServerRequests.createNewDialogRequest;;
+import com.example.messengerpigeon.jsonServerRequests.createNewProtectedDialogRequest;
 import com.example.messengerpigeon.miniClasses.friend;
 import com.example.messengerpigeon.serverInfo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -37,6 +40,7 @@ public class fragment_profile extends Fragment {
     authRequest authReq = new authRequest();
     int idReq = 0;
     int status;
+    private BigInteger privateKey;
 
     public fragment_profile(friend i, int st) {
         this.frProfile = i;
@@ -106,6 +110,7 @@ public class fragment_profile extends Fragment {
                                 //AuthTask at = new AuthTask();
                                 //at.execute("delete", authReq.getToken(),Integer.toString(frProfile.Id));
                             }
+
                         }
                     }
                     break;
@@ -113,6 +118,12 @@ public class fragment_profile extends Fragment {
                     System.out.println("button_2_click");
                     AuthTask at = new AuthTask();
                     at.execute("createDialog", authReq.getToken(),"", Integer.toString(frProfile.Id));
+                    break;
+                case R.id.button3:
+                    Pair publicKey = new Pair();
+                    privateKey = RSACrypt.generateKeys(publicKey, 128);
+                    AuthTask at2 = new AuthTask();
+                    at2.execute("createProtectedDialog", authReq.getToken(),"", Integer.toString(frProfile.Id), publicKey.x.toString(), publicKey.y.toString());
                     break;
             }
         }
@@ -122,6 +133,7 @@ public class fragment_profile extends Fragment {
         private Socket socket = null;
         private addFriendRequest addFriendRequest = null;
         private createNewDialogRequest createNewDialogRequest = null;
+        private createNewProtectedDialogRequest createNewProtectedDialogRequest = null;
 
         @Override
         protected void onPreExecute() {
@@ -171,6 +183,31 @@ public class fragment_profile extends Fragment {
                             toastPass.show();
                         }
                         break;
+                    case 3:
+                        createNewProtectedDialogRequest.responseHandler(ret);
+                        System.out.println(createNewProtectedDialogRequest.getResponse());
+
+                        if (createNewDialogRequest.getResponse().equals("OK")) {
+                            String id = createNewProtectedDialogRequest.getID();
+
+                            String APP_PREFERENCES_MY_PRIVATE_KEY = "DIALOG_KEY1_" + id;
+                            SharedPreferences.Editor editor = MainActivity.mSettings.edit();
+                            editor.putString(APP_PREFERENCES_MY_PRIVATE_KEY, privateKey.toString());
+                            editor.apply();
+
+
+                            Activity_Navigation.fragmentManager.beginTransaction().replace(R.id.main_content, new fragment_protected_messages()).commit();
+                            Activity_Navigation.toolbar.setTitle("Protected messages");
+                            Toast toastPass = Toast.makeText(getActivity(), "Диалог создан", Toast.LENGTH_LONG);
+                            toastPass.setGravity(Gravity.CENTER, 0, -90);
+                            toastPass.show();
+                        } else {
+                            Toast toastPass = Toast.makeText(getActivity(), ret.toString(), Toast.LENGTH_LONG);
+                            toastPass.setGravity(Gravity.CENTER, 0, -90);
+                            toastPass.show();
+                        }
+                        break;
+
                 }
 
             } catch (Exception ignored) {
@@ -199,7 +236,17 @@ public class fragment_profile extends Fragment {
                         socket = new Socket(serverAddr, serverInfo.getPort());
                         return sendAndListen(createNewDialogRequest.get_Request());
                     } else {
-                        return "";
+                        idReq = 3;
+                        if (data[0].equals("createProtectedDialog")) {
+                            createNewProtectedDialogRequest = new createNewProtectedDialogRequest();
+                            createNewProtectedDialogRequest.createRequest(data[1], data[2], data[3], data[4], data[5]);
+                            InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
+                            System.out.println(serverAddr);
+                            socket = new Socket(serverAddr, serverInfo.getPort());
+                            return sendAndListen(createNewProtectedDialogRequest.get_Request());
+                        } else {
+                            return "";
+                        }
                     }
                 }
               /*else

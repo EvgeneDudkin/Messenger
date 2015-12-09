@@ -6,6 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -13,8 +16,8 @@ import java.util.Objects;
  */
 public class listDialogsRequest extends jsonServerRequests {
     /**
-            * Токен, который вернул сервер
-    */
+     * Токен, который вернул сервер
+     */
     private static String token = "";
     /**
      * Список друзей
@@ -28,7 +31,7 @@ public class listDialogsRequest extends jsonServerRequests {
 
     }
 
-    public static String MyLogin="";
+    public static String MyLogin = "";
 
     /**
      * Конструктор
@@ -54,20 +57,28 @@ public class listDialogsRequest extends jsonServerRequests {
         jsonRequest = obj;
     }
 
+
+
+
     /**
      * override Обработчик ответа сервера
+     *
      * @param input Строка, которую вернул сервер
      */
     public void responseHandler(String input) {
         try {
             JSONObject ret = new JSONObject(input);
             response = ret.get("response").toString();
+
             response = Objects.equals(response, "OK") ? response : response.substring(6);
             JSONArray jsonDialogs = ret.getJSONArray("dialogs");
             dialogs = new dialog[jsonDialogs.length()];
             for (int i = 0; i < jsonDialogs.length(); i++) {
                 dialogs[i] = new dialog(jsonDialogs.getJSONObject(i));
             }
+            List<dialog> dialogList = Arrays.asList(dialogs);
+            Collections.sort(dialogList);
+            dialogList.toArray(dialogs);
         } catch (Exception ignored) {
             token = "";
             response = "j1";
@@ -77,6 +88,7 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * override Обработчик ошибок.
+     *
      * @throws Exception
      */
     public void errorHandler() throws Exception {
@@ -99,6 +111,7 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * Геттер токена
+     *
      * @return токен
      */
     public static String getToken() {
@@ -107,6 +120,7 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * Геттер реакции сервера
+     *
      * @return реакция сервера
      */
     public String getResponse() {
@@ -115,11 +129,14 @@ public class listDialogsRequest extends jsonServerRequests {
 
     /**
      * Геттер списка друзей
+     *
      * @return список друзей
      */
     public static dialog[] getDialogs() {
         return dialogs;
     }
 
-    public final static String getMyLogin(){return MyLogin;}
+    public final static String getMyLogin() {
+        return MyLogin;
+    }
 }
