@@ -17,31 +17,29 @@
             android:id="@+id/text_me_name_sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+
             android:text="sender:"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/text_me_mess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:maxWidth="300dp"
             android:text="hello!\nI'm fine\nhow are you?"
-            android:textColor="@color/colorPrimary"
-            android:textSize="14sp" />
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/text_me_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_marginLeft="10dp"
+
             android:text="10:40"
-            android:textColor="@color/colorPrimary"
-            android:textSize="14sp" />
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="10sp" />
 
     </LinearLayout>
 

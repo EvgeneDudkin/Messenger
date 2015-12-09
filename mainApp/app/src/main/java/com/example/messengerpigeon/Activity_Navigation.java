@@ -1,5 +1,7 @@
 package com.example.messengerpigeon;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +17,8 @@ import android.widget.RelativeLayout;
 
 import com.example.messengerpigeon.Fragments.fragment_list_inbox_requests;
 import com.example.messengerpigeon.Fragments.fragment_list_outbox_requests;
+import com.example.messengerpigeon.Fragments.fragment_pr_mess_1;
+import com.example.messengerpigeon.Fragments.fragment_pr_mess_2;
 import com.example.messengerpigeon.Fragments.fragment_protected_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_friends;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_messages;
@@ -34,6 +38,7 @@ public class Activity_Navigation extends AppCompatActivity {
     public static FragmentManager fragmentManager;
     List<Navigation_Item> listNavigationItems;
     List<Fragment> listFragments;
+    public static int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +49,9 @@ public class Activity_Navigation extends AppCompatActivity {
         initToolbar();
         initNavigation();
     }
+
     private void initToolbar() {
-        toolbar=(Toolbar) findViewById(R.id.toolbar_main);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setTitle(R.string.app_name);
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -70,12 +76,14 @@ public class Activity_Navigation extends AppCompatActivity {
         listViewNavigation = (ListView) findViewById(R.id.navigation_list);
 
         listNavigationItems = new ArrayList<Navigation_Item>();
-        listNavigationItems.add(new Navigation_Item("Friends", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("по англ?? исх", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("по англ?? вход", R.drawable.friends));
-        listNavigationItems.add(new Navigation_Item("Messages", R.drawable.message));
-        listNavigationItems.add(new Navigation_Item("Protected messages", R.drawable.message));
-        listNavigationItems.add(new Navigation_Item("Settings", R.drawable.settings));
+        listNavigationItems.add(new Navigation_Item("Friends", R.mipmap.ic_account_multiple));
+        listNavigationItems.add(new Navigation_Item("по англ?? исх", R.mipmap.ic_account_multiple));
+        listNavigationItems.add(new Navigation_Item("по англ?? вход", R.mipmap.ic_account_multiple));
+        listNavigationItems.add(new Navigation_Item("Messages", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Protected messages", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Подтвержденные", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Не подтвержденные", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Settings", R.mipmap.ic_settings));
 
         NavigationListAdapter navigationListAdapter = new NavigationListAdapter(getApplicationContext(),
                 R.layout.item_navigation_list, listNavigationItems);
@@ -87,6 +95,8 @@ public class Activity_Navigation extends AppCompatActivity {
         listFragments.add(new fragment_list_inbox_requests());
         listFragments.add(new fragments_navigation_item_messages());
         listFragments.add(new fragment_protected_messages());
+        listFragments.add(new fragment_pr_mess_1());
+        listFragments.add(new fragment_pr_mess_2());
         listFragments.add(new fragments_navigation_item_setting());
 
 
@@ -113,5 +123,49 @@ public class Activity_Navigation extends AppCompatActivity {
                 drawerLayout.closeDrawer(drawerPane);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        switch (i) {
+            case 0:
+                openQuitDialog();
+                break;
+            case 1:
+                fragments_navigation_item_friends.friends_backButtonWasPressed();
+                break;
+            case 2:
+                fragments_navigation_item_messages.messages_backButtonWasPressed();
+                break;
+            case 3:
+                fragment_list_inbox_requests.in_backButtonWasPressed();
+                break;
+            case 4:
+                fragment_list_outbox_requests.out_backButtonWasPressed();
+                break;
+        }
+    }
+
+    private void openQuitDialog() {
+        final AlertDialog.Builder quitDialog = new AlertDialog.Builder(
+                Activity_Navigation.this);
+        quitDialog.setTitle("Закрыть приложение?");
+
+        quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        quitDialog.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                quitDialog.getContext();
+            }
+        });
+
+        quitDialog.show();
     }
 }

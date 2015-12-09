@@ -6,13 +6,13 @@
 
     <gradient
         android:angle="90"
-        android:centerColor="@color/colorMess"
-        android:startColor="@color/colorMess"
-        android:endColor="@color/colorMess"/>
+        android:centerColor="@color/colorPrimary_light"
+        android:startColor="@color/colorPrimary_light"
+        android:endColor="@color/colorPrimary_light"/>
 
     <stroke
         android:width="1dp"
-        android:color="@color/colorMess"/>
+        android:color="@color/colorPrimary_light"/>
 
     <padding
         android:bottom="15dp"

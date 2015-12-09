@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.messengerpigeon.Activity_Navigation;
 import com.example.messengerpigeon.R;
 
 public class fragments_navigation_item_setting extends Fragment {
@@ -15,6 +16,7 @@ public class fragments_navigation_item_setting extends Fragment {
                              Bundle savedInstanceState){
         View v=inflater.inflate(R.layout.fragment_setting,
                 container,false);
+        Activity_Navigation.i=0;
 
         return  v;
     }

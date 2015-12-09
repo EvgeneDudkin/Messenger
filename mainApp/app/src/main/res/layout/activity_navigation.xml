@@ -36,7 +36,7 @@
         android:layout_width="280dp"
         android:layout_gravity="start"
         android:layout_height="match_parent"
-        android:background="@color/colormainBackground">
+        android:background="@color/colorPrimary">
 
         <!--Profile Box-->
 
@@ -53,7 +53,7 @@
                 android:layout_height="100dp"
                 android:layout_margin="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/account"/>
+                android:background="@mipmap/ic_account"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"

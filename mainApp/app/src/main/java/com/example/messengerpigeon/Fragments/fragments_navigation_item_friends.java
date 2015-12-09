@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.Activity_Navigation;
+import com.example.messengerpigeon.Encryption.jsonCrypt;
 import com.example.messengerpigeon.Messages_Item.MessagesListAdapter;
 import com.example.messengerpigeon.Messages_Item.Messages_Item;
 import com.example.messengerpigeon.R;
@@ -23,9 +23,6 @@ import com.example.messengerpigeon.jsonServerRequests.searchFriendRequest;
 import com.example.messengerpigeon.miniClasses.friend;
 import com.example.messengerpigeon.serverInfo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -44,12 +41,14 @@ public class fragments_navigation_item_friends extends Fragment {
     private friendsRequest friendsReq = null;
     private searchFriendRequest searchFriends = null;
     int list_friends=0;
+    private static FragmentManager fragmentManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_friends,
                 container, false);
+        Activity_Navigation.i=0;
         listViewFriends = (ListView) v.findViewById(R.id.list_friends);
 
         button_search = (Button) v.findViewById(R.id.button_search);
@@ -81,11 +80,12 @@ public class fragments_navigation_item_friends extends Fragment {
         listFriendsItem = new ArrayList<Messages_Item>();
         if (l == 0) {
             true_false = false;
-            listFriendsItem.add(new Messages_Item("У вас нет друзей", R.drawable.account, ""));
+            listFriendsItem.add(new Messages_Item("У вас нет друзей", R.mipmap.ic_account, ""));
 
         } else {
+            true_false=true;
             for (int i = 0; i < l; i++) {
-                listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.drawable.account, listFriends[i].Login));
+                listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.mipmap.ic_account, listFriends[i].Login));
             }
         }
         MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getActivity(), R.layout.item_messages, listFriendsItem);
@@ -102,14 +102,19 @@ public class fragments_navigation_item_friends extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     if (true_false) {
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragmentFriends.get(position)).commit();
+                        Activity_Navigation.i=1;
+                        fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragmentFriends.get(position)).addToBackStack("1").commit();
                         Activity_Navigation.toolbar.setTitle(listFriends[position].Login);
                     }
                 }
             });
         }
 
+    }
+    public static  void friends_backButtonWasPressed() {
+        Activity_Navigation.i=0;
+        fragmentManager.popBackStack();
     }
 
     public class AuthTask extends AsyncTask<String, Void, String> {

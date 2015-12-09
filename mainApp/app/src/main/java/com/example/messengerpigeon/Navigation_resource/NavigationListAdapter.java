@@ -27,7 +27,7 @@ public class NavigationListAdapter extends ArrayAdapter<Navigation_Item> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        if (position == 1 || position == 2 || position==4) {
+        if (position == 1 || position == 2 || position==5 || position==6) {
             System.out.println("123");
             this.resLayout = R.layout.small_item;
         } else {
