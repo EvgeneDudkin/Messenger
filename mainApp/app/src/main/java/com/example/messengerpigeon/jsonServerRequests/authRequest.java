@@ -16,6 +16,8 @@ public class authRequest extends jsonServerRequests {
      * Токен, который вернул сервер
      */
     private static String token = "";
+    private static String firstName = "";
+    private static String lastName = "";
     /**
      * Список друзей
      */
@@ -70,6 +72,10 @@ public class authRequest extends jsonServerRequests {
         try {
             JSONObject ret = new JSONObject(input);
             token = ret.get("token").toString();
+            firstName = ret.get("firstName").toString();
+            lastName = ret.get("lastName").toString();
+            //lastName = ret.get("lastName").toString();
+            //MyLogin = ret.get("login").toString();
             response = ret.get("response").toString();
             response = Objects.equals(response, "OK") ? response : response.substring(6);
             /*JSONArray jsonDialogs = ret.getJSONArray("dialogs");
@@ -130,5 +136,8 @@ public class authRequest extends jsonServerRequests {
         return dialogs;
     }
 
+
     public final static String getMyLogin(){return MyLogin;}
+    public final static String getMyName(){return firstName;}
+    public final static String getMyLastName(){return lastName;}
 }

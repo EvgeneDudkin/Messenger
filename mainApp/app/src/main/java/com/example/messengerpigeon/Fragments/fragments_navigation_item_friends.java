@@ -84,6 +84,7 @@ public class fragments_navigation_item_friends extends Fragment {
             listFriendsItem.add(new Messages_Item("У вас нет друзей", R.drawable.account, ""));
 
         } else {
+            true_false=true;
             for (int i = 0; i < l; i++) {
                 listFriendsItem.add(new Messages_Item(listFriends[i].FirstName + " " + listFriends[i].LastName, R.drawable.account, listFriends[i].Login));
             }

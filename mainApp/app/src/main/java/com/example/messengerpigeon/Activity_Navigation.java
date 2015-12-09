@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.messengerpigeon.Fragments.fragment_list_inbox_requests;
 import com.example.messengerpigeon.Fragments.fragment_list_outbox_requests;
@@ -21,6 +22,7 @@ import com.example.messengerpigeon.Fragments.fragments_navigation_item_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_setting;
 import com.example.messengerpigeon.Navigation_resource.NavigationListAdapter;
 import com.example.messengerpigeon.Navigation_resource.Navigation_Item;
+import com.example.messengerpigeon.jsonServerRequests.authRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,8 @@ public class Activity_Navigation extends AppCompatActivity {
     public static FragmentManager fragmentManager;
     List<Navigation_Item> listNavigationItems;
     List<Fragment> listFragments;
+    TextView profileLogin;
+    TextView profileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,12 @@ public class Activity_Navigation extends AppCompatActivity {
 
         initToolbar();
         initNavigation();
+
+        profileLogin=(TextView)findViewById(R.id.profile_login);
+        profileName=(TextView)findViewById(R.id.profile_name);
+        profileLogin.setText(authRequest.getMyLogin());
+        profileName.setText(authRequest.getMyName() + " " + authRequest.getMyLastName());
+        System.out.println(authRequest.getMyLastName());
     }
     private void initToolbar() {
         toolbar=(Toolbar) findViewById(R.id.toolbar_main);
