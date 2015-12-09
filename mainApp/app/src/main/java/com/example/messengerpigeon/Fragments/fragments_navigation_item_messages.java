@@ -28,6 +28,7 @@ import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class fragments_navigation_item_messages extends Fragment {
@@ -61,8 +62,13 @@ public class fragments_navigation_item_messages extends Fragment {
         listViewMessage = (ListView) v.findViewById(R.id.list_messages);
 
         listMessItem = new ArrayList<Messages_Item>();
+        Date tmp = new Date();
         for (int i = 0; i < countDialog; i++) {
-            listMessItem.add(new Messages_Item(dialog[i].getName(), R.drawable.account, dialog[i].Login));
+            if (dialog[i].DateTime.getDate() < tmp.getDate())
+                listMessItem.add(new Messages_Item(dialog[i].getName(), R.drawable.account, dialog[i].DateTime.getDay() +    dialog[i].LastMsg));
+            else
+                listMessItem.add(new Messages_Item(dialog[i].getName(), R.drawable.account, dialog[i].DateTime.getTime() + dialog[i].LastMsg));
+
         }
 
         MessagesListAdapter messagesListAdapter = new MessagesListAdapter(getActivity(),
