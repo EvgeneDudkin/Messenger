@@ -261,5 +261,64 @@
 			avatar: //????????????????????????????????????
 			}
 		}
-		
-			
+
+
+update: 
+
+
+Список активных защищеных диалогов:
+	{
+	dialogsLPE: {
+		token: %token%;
+		}
+	}
+
+	{
+	response: %res%,
+		dialogs: [
+			dialogId: ,
+			dialogName: ,
+			login: ,
+			lastUpdate: date,
+			publicKey1: ,
+			publicKey2:
+			]
+	}
+
+Список не активных защищеных диалогов:
+	{
+	dialogsLPD: {
+		token: %token%;
+		}
+	}
+
+	{
+	response: %res%,
+		dialogs: [
+			dialogId: ,
+			dialogName: ,
+			login: ,
+			lastUpdate: date,
+			status: 
+			]
+	}		
+
+Создание диалога: 
+	{
+	createPD: {
+		%token%,
+		%idRecipient%
+	}
+	}
+
+	{
+	response: OK
+	}
+
+Подтверддение диалога:
+	{
+	acceptPD: {
+		token:,
+		dalogID
+	}
+	}
