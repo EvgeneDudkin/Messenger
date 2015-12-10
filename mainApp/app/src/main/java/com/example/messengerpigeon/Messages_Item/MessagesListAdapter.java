@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.messengerpigeon.R;
+import com.example.messengerpigeon.miniClasses.dialog;
 
 import java.util.List;
 
@@ -35,12 +36,14 @@ public class MessagesListAdapter extends ArrayAdapter<Messages_Item> {
         TextView tvTitle = (TextView) v.findViewById(R.id.text_friend_name);
         ImageView navIcon = (ImageView) v.findViewById(R.id.image_friend_mess);
         TextView lsMess=(TextView)v.findViewById(R.id.text_last_message);
+        TextView date=(TextView)v.findViewById(R.id.text_date);
 
         Messages_Item navItem = listMessItems.get(position);
 
         tvTitle.setText(navItem.getNameFriend());
         navIcon.setImageResource(navItem.getResIcon());
         lsMess.setText(navItem.getMessDialog());
+        date.setText(navItem.getDate());
 
         return v;
     }

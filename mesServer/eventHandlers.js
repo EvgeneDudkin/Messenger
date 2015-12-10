@@ -13,9 +13,9 @@
  var logconsole = log4js.getLogger('cons');
 
  function writeAndDestroy(sock, str) {
-   logger.info("OUTPUT before encrypt:")
+   //logger.info("OUTPUT before encrypt:")
    logger.debug(str);
-  // logger.debug(JSON.parse(str));
+   //logger.debug(JSON.parse(str));
    try {
       var resp = JSON.parse(str);
       logconsole.info("output");
@@ -40,8 +40,8 @@
    var res = {query: str, key: lngth, salt: salt};
    sock.write(JSON.stringify(res));
 
-   logger.info("OUTPUT sock.write:")
-   logger.debug(res);
+   //logger.info("OUTPUT sock.write:")
+   //logger.debug(res);
 
    //sock.write(str);
    sock.destroy();
@@ -49,8 +49,8 @@
 
 function dataHandler(data, sock, conect) {
    data = data.toString();
-   logger.info("INPUT: data:")
-   logger.debug(data);
+   //logger.info("INPUT: data:")
+   //logger.debug(data);
    for (var i = 0; i < data.length; i++) {
       if (data[i] == '{') {
          data = data.substr(i);
@@ -143,6 +143,22 @@ function dataHandler(data, sock, conect) {
       logconsole.info("userInfo");
       getUserInfo(sock, conect, query);
    }
+   else if (query.createPD != null) {
+      logconsole.info("createPD");
+      createPD(sock, conect, query);
+   }
+   else if (query.dialogsLPE != null) {
+      logconsole.info("dialogsLPE");
+      dialogsLPE(sock, conect, query);
+   }
+   else if (query.acceptPD != null) {
+      logconsole.info("acceptPD");
+      acceptPD(sock, conect, query);
+   }
+   else if (query.dialogsLPD != null) {
+      logconsole.info("dialogsLPD");
+      dialogsLPD(sock, conect, query);
+   }
    else {
       logconsole.error("Erorr 2");
       var answer = {response: "Error 2"};
@@ -158,7 +174,7 @@ function dataHandler(data, sock, conect) {
  * @param query запрос
  */
  function authRequest(sock, conect, query) {
-   var answer = {response: "", token: "", dialogs: []};
+   var answer = {response: "", token: "", firstName: "", lastName: "", login: "", userId: null};
    if (query.auth.login == null || query.auth.pass == null) {
       answer.response = "Error a8";
       writeAndDestroy(sock, JSON.stringify(answer));
@@ -182,7 +198,7 @@ function dataHandler(data, sock, conect) {
       }
       var token = crypto.randomBytes(32).toString('hex');
       //Проверка на то, что такое токен уже есть. todo: НАДО ЛИ?!?!
-      conect.query('SELECT COUNT(*) from tokens where token="' + token + '"', function (err2, rows2) {
+      conect.query('SELECT COUNT(*) from tokens, users where userId = id and token="' + token + '"', function (err2, rows2) {
          //Проверка на ошибку
          if (err2) {
             answer.response = "Error a6";
@@ -190,6 +206,7 @@ function dataHandler(data, sock, conect) {
             sock.destroy();
             return;
          }
+         //logconsole.debug(rows2);
          //Проверяем что такого токена нет
          if (rows2[0]['COUNT(*)'] === 0) {
             answer.response = "OK";
@@ -198,37 +215,29 @@ function dataHandler(data, sock, conect) {
             conect.query('INSERT into tokens (userId, token) values(' + rows[0]['id'] + ', "' + token + '")', function (err3) {
                //Проверка ошибки
                if (!err3) {
-                  conect.query('SELECT login, dialogs.id, dialogs.name from dialogs, users, userdialog where ' +
-                     ' dialogId = dialogs.id and userId = users.id and ' +
-                     ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + rows[0]['id'] + ') and not (users.id = ' + rows[0]['id'] + ')', function (err4, rows4) {
-                        if (err4) {
-                           //console.log(err4);
-                           answer.response = "Error adl4";
-                           writeAndDestroy(sock, JSON.stringify(answer));
-                           sock.destroy();
-                           return;
-                        }
-                        var dialogsList = [];
-                        for (var i = 0; i < rows4.length; i++) {
-                           dialogsList[i] = {
-                              id: rows4[i]['id'],
-                              name: rows4[i]['name'],
-                              login: rows4[i]['login']
-                           };
-                        }
-                        answer.response = "OK";
-                        answer.dialogs = dialogsList;
+                  conect.query('SELECT id, login, firstName, lastName from users, tokens where token = "'+token+'" and userId = id', function (err4, rows4) {
+                     if(err4) {
+                        answer.response = "Error a9";
                         writeAndDestroy(sock, JSON.stringify(answer));
                         sock.destroy();
-                     });
-}
-else {
-   answer.response = "Error a7";
-   answer.token = "";
-   writeAndDestroy(sock, JSON.stringify(answer));
-   sock.destroy();
-}
-});
+                        return;
+                     }
+                     answer.firstName = rows4[0]['firstName'];
+                     answer.lastName = rows4[0]['lastName'];
+                     answer.userId = rows4[0]['id'];
+                     answer.login = rows4[0]['login'];
+                     writeAndDestroy(sock, JSON.stringify(answer));
+                     sock.destroy();
+                  });
+
+               }
+               else {
+                  answer.response = "Error a7";
+                  answer.token = "";
+                  writeAndDestroy(sock, JSON.stringify(answer));
+                  sock.destroy();
+               }
+            });
 }
 else {
    answer.response = "Error a8";
@@ -237,15 +246,7 @@ else {
    sock.destroy();
 }
 });
-      //
-      //Ошибки ошибочки ошибулички
-      /*if(i == 11) {
-       answer.response = "Error a5";
-       writeAndDestroy(sock, JSON.stringify(answer));
-       sock.destroy();
-       return;
-    }*/
- });
+});
 }
 
 function regRequest(sock, conect, query) {
@@ -592,7 +593,7 @@ function dialogsListRequest(sock, conect, query) {
       //Собственно сама выборка диалогов
       conect.query('SELECT login, dialogs.id, dialogs.name, dialogs.lastUpdate, dialogs.lastLogin , dialogs.lastMsg from dialogs, users, userdialog where ' +
          ' dialogId = dialogs.id and userId = users.id and ' +
-         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ')', function (err2, rows2) {
+         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and protected = 0', function (err2, rows2) {
             if (err2){
 
                answer.response = "Error dl4";
@@ -850,6 +851,38 @@ else if (query.lastNmsg.idStart != null) {
             sock.destroy();
          });
 }
+else if (query.lastNmsg.idLast != null) {
+   conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
+      query.lastNmsg.dialogId + ' and messages.id > ' + query.lastNmsg.idLast + '  order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
+            //Проверка на ошибку
+            if (err2) {
+               //console.log("Error ln4");
+               answer.response = "Error ln14";
+               writeAndDestroy(sock, JSON.stringify(answer));
+               sock.destroy();
+               return;
+            }
+            //Формируем JSON список друзей
+            var messagesList = [];
+            for (var i = 0; i < rows2.length; i++) {
+               var datestr = rows2[i]['datatime'].toString().substring(0, 33);
+               //console.log(typeof datestr);
+               messagesList[i] = {
+                  id: rows2[i]['id'],
+                  login: rows2[i]['login'],
+                  senderId: rows2[i]['senderId'],
+                  text: rows2[i]['msg'],
+                  datatime: datestr
+               };
+            }
+
+            answer.response = "OK";
+            answer.messages = messagesList;
+            //console.log(answer);
+            writeAndDestroy(sock, JSON.stringify(answer));
+            sock.destroy();
+         });
+}
 else {
    conect.query('SELECT messages.id as id, senderId, login, msg, datatime FROM messages join users on senderId=users.id where dialogId=' +
       query.lastNmsg.dialogId + ' order by messages.id desc   limit ' + query.lastNmsg.messageCount, function (err2, rows2) {
@@ -1008,9 +1041,9 @@ function dialogsLPE(sock, conect, query) {
       //Собственно сама выборка диалогов
       conect.query('SELECT login, dialogs.id, dialogs.name, dialogs.lastUpdate, userdialog.publicKey1, userdialog.publicKey2 from dialogs, users, userdialog where ' +
          ' dialogId = dialogs.id and userId = users.id and ' +
-         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and dialogs.protected = 1', function (err2, rows2) {
+         ' exists(select * from userdialog where dialogId = dialogs.id and userId = ' + id + ') and not (users.id = ' +id + ') and dialogs.enable=1 and dialogs.protected = 1', function (err2, rows2) {
             if (err2){
-
+               logconsole.error(err2)
                answer.response = "Error dlp4";
                writeAndDestroy(sock, JSON.stringify(answer));
                sock.destroy();
@@ -1034,8 +1067,176 @@ function dialogsLPE(sock, conect, query) {
 
          });
 
+});
+}
+
+function createPD(sock, conect, query) {
+   var answer = {response: "", id: null};
+   if(query.createPD.token == null || query.createPD.idRecipient == null || query.createPD.publicKey2 == null || query.createPD.publicKey2 == null){
+      answer.response = "Error cpd1";
+      writeAndDestroy(sock, JSON.stringify(answer));
+      sock.destroy();
+      return;
+   }
+   conect.query('SELECT userId from tokens where token="' + query.createPD.token + '"', function (err, rows) {
+      //Проверка на ошибку
+      if (err) {
+         answer.response = "Error dlp2";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      //Проверка, что такой токен вообще есть
+      if (rows.length === 0) {
+         answer.response = "Error dlp3";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      var id = rows[0]['userId']; 
+      conect.query('INSERT INTO dialogs (protected, enable) values (1,0)', function (err2, rows2) {
+         if(err2) {
+            answer.response = "Error dlp4";
+            writeAndDestroy(sock, JSON.stringify(answer));
+            sock.destroy();
+            return;
+         }
+         conect.query('INSERT INTO userdialog (userId, dialogId, publicKey1, publicKey2) values ('+id+', '+rows2.insertId+', '+query.createPD.publicKey1+', '+query.createPD.publicKey2+')', 
+            function (err3,rows3) {
+               if(err3) {
+                  answer.response = "Error dlp5";
+
+                  writeAndDestroy(sock, JSON.stringify(answer));
+                  sock.destroy();
+                  return;
+               }
+               conect.query('INSERT INTO userdialog (userId, dialogId) values ('+query.createPD.idRecipient+', '+rows2.insertId+')', 
+                  function (err4,rows4) { 
+                     if(err4) {
+                        answer.response = "Error dlp6";
+
+                        writeAndDestroy(sock, JSON.stringify(answer));
+                        sock.destroy();
+                        return;
+                     }
+                     answer.response = "OK";
+                     answer.id = rows2.insertId;
+                     writeAndDestroy(sock, JSON.stringify(answer));
+                     sock.destroy();
+                     return;
+                  });
+            });
+})
+});
+}
+
+function acceptPD(sock, conect, query) {
+   var answer = {response: ""};
+   if(query.acceptPD.token == null || query.acceptPD.dialogId ==null ||  query.acceptPD.publicKey1 ==null ||  query.acceptPD.publicKey1 ==null) {
+      answer.response = "Error apd1";
+      writeAndDestroy(sock, JSON.stringify(answer));
+      sock.destroy();
+      return;
+   }
+
+   conect.query('SELECT userId from tokens where token="' + query.acceptPD.token + '"', function (err, rows) {
+      //Проверка на ошибку
+      if (err) {
+         answer.response = "Error apd2";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      //Проверка, что такой токен вообще есть
+      if (rows.length === 0) {
+         answer.response = "Error apd3";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      var id = rows[0]['userId']; 
+      conect.query('UPDATE dialogs set enable = 1 where id = '+query.acceptPD.dialogId, function (err2, rows2) {
+
+         if (err2) {
+            answer.response = "Error apd3";
+            writeAndDestroy(sock, JSON.stringify(answer));
+            sock.destroy();
+            return;
+         }
+         conect.query('update userdialog set publicKey1 = '+query.acceptPD.publicKey1+', publicKey2='+query.acceptPD.publicKey2+') where dialogId = '+query.acceptPD.dialogId+' and userId = ' +id, function(err3, rows3) {
+            if (err3) {
+               answer.response = "Error apd4";
+               writeAndDestroy(sock, JSON.stringify(answer));
+               sock.destroy();
+               return;
+            }
+            answer.response = "OK";
+            writeAndDestroy(sock, JSON.stringify(answer));
+            sock.destroy();
+            return;
+         });
+      });
    });
 }
 
+function dialogsLPD(sock, conect, query) {
+   var answer = {response: "", dialogs: []};
+   if(query.dialogsLPD.token == null) {
+      answer.response = "Error dlpd1";
+      writeAndDestroy(sock, JSON.stringify(answer));
+      sock.destroy();
+      return;
+   }
+
+   conect.query('SELECT userId, login from tokens, users where userId = id and token="' + query.dialogsLPD.token + '"', function (err, rows) {
+      //Проверка на ошибку
+      if (err) {
+         answer.response = "Error dlpd2";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      //Проверка, что такой токен вообще есть
+      if (rows.length === 0) {
+         answer.response = "Error dlpd3";
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+         return;
+      }
+      var id = rows[0]['userId']; 
+      var login = rows[0]['login']; 
+      conect.query('SELECT users.id as userId, login, dialogs.id as dialogId, dialogs.name, dialogs.lastUpdate, isnull(userdialog.publicKey1) as pk from dialogs, users, userdialog where ' +
+        'dialogId = dialogs.id and userId = users.id and ' +
+        '(exists(select * from userdialog where dialogId = dialogs.id and userId = '+id+' and isNull(publicKey1) and isNull(publicKey2)) xor' +
+          ' exists(select * from userdialog where dialogId = dialogs.id and not(userId = '+id+') and isNull(publicKey1) and isNull(publicKey2))) and dialogs.enable=0 and dialogs.protected = 1', function (err2, rows2) {
+         if (err2){
+
+            answer.response = "Error dlpd4";
+            writeAndDestroy(sock, JSON.stringify(answer));
+            sock.destroy();
+            return;
+         }
+         //logconsole.debug(rows2);
+         var dialogsList = [];
+         var i = 0;
+         for (var j = 0; j < rows2.length; j++) {
+            if(rows2[j]['login'] == login) continue;
+            //logconsole.debug(i);
+            dialogsList[i] = {
+               id: rows2[j]['dialogId'],
+               name: rows2[j]['name'],
+               login: rows2[j]['login'],
+               date: rows2[j]['lastUpdate'].toString().substring(0, 33),
+               status: !rows2[j]['pk']
+            };
+            i++;
+         }
+         answer.response = "OK";
+         answer.dialogs = dialogsList;
+         writeAndDestroy(sock, JSON.stringify(answer));
+         sock.destroy();
+      });
+});
+}
 
 exports.dataH = dataHandler;
