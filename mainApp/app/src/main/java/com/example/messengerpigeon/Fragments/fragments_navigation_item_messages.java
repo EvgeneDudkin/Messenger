@@ -107,6 +107,7 @@ public class fragments_navigation_item_messages extends Fragment implements Swip
 
     public static void messages_backButtonWasPressed() {
         Activity_Navigation.i = 0;
+        Activity_Navigation.toolbar.setTitle("Сообщения");
         fragmentManager.popBackStack();
     }
 

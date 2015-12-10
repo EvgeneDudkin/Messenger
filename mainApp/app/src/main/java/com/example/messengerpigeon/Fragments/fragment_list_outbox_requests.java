@@ -99,6 +99,7 @@ public class fragment_list_outbox_requests extends Fragment {
     }
     public static  void out_backButtonWasPressed() {
         Activity_Navigation.i=0;
+        Activity_Navigation.toolbar.setTitle("Исходящие запросы");
         fragmentManager.popBackStack();
     }
 

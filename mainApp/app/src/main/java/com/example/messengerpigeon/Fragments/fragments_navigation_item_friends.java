@@ -80,8 +80,12 @@ public class fragments_navigation_item_friends extends Fragment {
         listFriendsItem = new ArrayList<Messages_Item>();
         if (l == 0) {
             true_false = false;
-            listFriendsItem.add(new Messages_Item("У вас нет друзей", R.mipmap.ic_account, ""));
-
+            if(list_friends==2) {
+                listFriendsItem.add(new Messages_Item("Поиск не дал результатов", R.mipmap.ic_account, ""));
+            }
+            else{
+                listFriendsItem.add(new Messages_Item("У вас нет друзей", R.mipmap.ic_account, ""));
+            }
         } else {
             true_false=true;
             for (int i = 0; i < l; i++) {
@@ -102,7 +106,7 @@ public class fragments_navigation_item_friends extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     if (true_false) {
-                        Activity_Navigation.i=1;
+                        Activity_Navigation.i = 1;
                         fragmentManager = getFragmentManager();
                         fragmentManager.beginTransaction().replace(R.id.main_content, listFragmentFriends.get(position)).addToBackStack("1").commit();
                         Activity_Navigation.toolbar.setTitle(listFriends[position].Login);
@@ -114,6 +118,7 @@ public class fragments_navigation_item_friends extends Fragment {
     }
     public static  void friends_backButtonWasPressed() {
         Activity_Navigation.i=0;
+        Activity_Navigation.toolbar.setTitle("Друзья");
         fragmentManager.popBackStack();
     }
 

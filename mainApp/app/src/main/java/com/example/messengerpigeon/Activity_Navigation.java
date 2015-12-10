@@ -19,7 +19,6 @@ import com.example.messengerpigeon.Fragments.fragment_list_inbox_requests;
 import com.example.messengerpigeon.Fragments.fragment_list_outbox_requests;
 import com.example.messengerpigeon.Fragments.fragment_pr_mess_1;
 import com.example.messengerpigeon.Fragments.fragment_pr_mess_2;
-import com.example.messengerpigeon.Fragments.fragment_protected_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_friends;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_messages;
 import com.example.messengerpigeon.Fragments.fragments_navigation_item_setting;
@@ -76,14 +75,13 @@ public class Activity_Navigation extends AppCompatActivity {
         listViewNavigation = (ListView) findViewById(R.id.navigation_list);
 
         listNavigationItems = new ArrayList<Navigation_Item>();
-        listNavigationItems.add(new Navigation_Item("Friends", R.mipmap.ic_account_multiple));
-        listNavigationItems.add(new Navigation_Item("по англ?? исх", R.mipmap.ic_account_multiple));
-        listNavigationItems.add(new Navigation_Item("по англ?? вход", R.mipmap.ic_account_multiple));
-        listNavigationItems.add(new Navigation_Item("Messages", R.mipmap.ic_message));
-        listNavigationItems.add(new Navigation_Item("Protected messages", R.mipmap.ic_message));
-        listNavigationItems.add(new Navigation_Item("Подтвержденные", R.mipmap.ic_message));
-        listNavigationItems.add(new Navigation_Item("Не подтвержденные", R.mipmap.ic_message));
-        listNavigationItems.add(new Navigation_Item("Settings", R.mipmap.ic_settings));
+        listNavigationItems.add(new Navigation_Item("Друзья", R.mipmap.ic_account_multiple));
+        listNavigationItems.add(new Navigation_Item("Исходящие запросы", R.mipmap.ic_account_multiple));
+        listNavigationItems.add(new Navigation_Item("Входящие запросы", R.mipmap.ic_account_multiple));
+        listNavigationItems.add(new Navigation_Item("Диалоги", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Защищенные диалоги", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Запросы", R.mipmap.ic_message));
+        listNavigationItems.add(new Navigation_Item("Настройки", R.mipmap.ic_settings));
 
         NavigationListAdapter navigationListAdapter = new NavigationListAdapter(getApplicationContext(),
                 R.layout.item_navigation_list, listNavigationItems);
@@ -94,7 +92,6 @@ public class Activity_Navigation extends AppCompatActivity {
         listFragments.add(new fragment_list_outbox_requests());
         listFragments.add(new fragment_list_inbox_requests());
         listFragments.add(new fragments_navigation_item_messages());
-        listFragments.add(new fragment_protected_messages());
         listFragments.add(new fragment_pr_mess_1());
         listFragments.add(new fragment_pr_mess_2());
         listFragments.add(new fragments_navigation_item_setting());
@@ -143,6 +140,9 @@ public class Activity_Navigation extends AppCompatActivity {
                 break;
             case 4:
                 fragment_list_outbox_requests.out_backButtonWasPressed();
+                break;
+            case 5:
+                fragment_pr_mess_1.protected_mess_backButtonWasPressed();
                 break;
         }
     }

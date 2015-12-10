@@ -96,6 +96,7 @@ public class fragment_list_inbox_requests extends Fragment {
     }
     public static  void in_backButtonWasPressed() {
         Activity_Navigation.i=0;
+        Activity_Navigation.toolbar.setTitle("Входящие запросы");
         fragmentManager.popBackStack();
     }
 

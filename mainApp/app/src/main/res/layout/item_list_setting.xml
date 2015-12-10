@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="10dp"
-    android:orientation="horizontal"
-    android:id="@+id/layout_pr"
-    android:background="@color/colorWhite">
+    android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/image_friend_mess"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@mipmap/ic_account"/>
+        android:id="@+id/image_setting"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@mipmap/ic_settings"
+        android:layout_gravity="center_vertical"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -20,23 +19,22 @@
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/text_friend_name"
+            android:id="@+id/text_title_setting"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textSize="16sp"
             android:textColor="@color/colorTextPrimary"
-            android:textStyle="bold"
             android:layout_marginLeft="10dp"
-            android:text="@string/friend_name"/>
+            android:text="Общие настройки"/>
 
         <TextView
-            android:id="@+id/text_last_message"
+            android:id="@+id/text_subtitle_setting"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textSize="14sp"
             android:textColor="@color/colorTextSecondary"
             android:layout_marginLeft="10dp"
-            android:text="last message"/>
+            android:text="Общие настройки"/>
 
     </LinearLayout>
 

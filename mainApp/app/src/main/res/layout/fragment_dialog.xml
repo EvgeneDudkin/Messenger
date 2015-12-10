@@ -18,7 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_weight="10">
+        android:layout_weight="10"
+        android:background="@color/colorWhite">
 
         <EditText
             android:id="@+id/text_Send"

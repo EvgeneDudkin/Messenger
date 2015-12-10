@@ -35,7 +35,7 @@ public class acceptProtectedDialogRequest extends jsonServerRequests {
         JSONObject req = new JSONObject();
         req.put("token", token);
         req.put("dialogName", nameProtectedDialog);
-        req.put("dialogID", dialogId);
+        req.put("dialogId", dialogId);
         req.put("publicKey1", publicKey1);
         req.put("publicKey2", publicKey2);
         obj.put("acceptPD", req);

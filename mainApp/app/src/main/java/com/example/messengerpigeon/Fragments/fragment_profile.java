@@ -121,7 +121,7 @@ public class fragment_profile extends Fragment {
                     break;
                 case R.id.button3:
                     Pair publicKey = new Pair();
-                    privateKey = RSACrypt.generateKeys(publicKey, 128);
+                    privateKey = RSACrypt.generateKeys(publicKey, 32);
                     AuthTask at2 = new AuthTask();
                     at2.execute("createProtectedDialog", authReq.getToken(),"", Integer.toString(frProfile.Id), publicKey.x.toString(), publicKey.y.toString());
                     break;
@@ -187,7 +187,7 @@ public class fragment_profile extends Fragment {
                         createNewProtectedDialogRequest.responseHandler(ret);
                         System.out.println(createNewProtectedDialogRequest.getResponse());
 
-                        if (createNewDialogRequest.getResponse().equals("OK")) {
+                        if (createNewProtectedDialogRequest.getResponse().equals("OK")) {
                             String id = createNewProtectedDialogRequest.getID();
 
                             String APP_PREFERENCES_MY_PRIVATE_KEY = "DIALOG_KEY1_" + id;
@@ -196,8 +196,8 @@ public class fragment_profile extends Fragment {
                             editor.apply();
 
 
-                            Activity_Navigation.fragmentManager.beginTransaction().replace(R.id.main_content, new fragment_protected_messages()).commit();
-                            Activity_Navigation.toolbar.setTitle("Protected messages");
+                            Activity_Navigation.fragmentManager.beginTransaction().replace(R.id.main_content, new fragment_pr_mess_2()).commit();
+                            Activity_Navigation.toolbar.setTitle("Неподтвержденные диалоги");
                             Toast toastPass = Toast.makeText(getActivity(), "Диалог создан", Toast.LENGTH_LONG);
                             toastPass.setGravity(Gravity.CENTER, 0, -90);
                             toastPass.show();
