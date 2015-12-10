@@ -147,7 +147,7 @@ public class Activity_Navigation extends AppCompatActivity {
         }
     }
 
-    private void openQuitDialog() {
+    private  void openQuitDialog() {
         final AlertDialog.Builder quitDialog = new AlertDialog.Builder(
                 Activity_Navigation.this);
         quitDialog.setTitle("Закрыть приложение?");
@@ -155,7 +155,8 @@ public class Activity_Navigation extends AppCompatActivity {
         quitDialog.setPositiveButton("Да", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                //finish();
+                System.exit(0);
             }
         });
 

@@ -69,6 +69,7 @@ public class fragment_profile extends Fragment {
         switch (status) {
             case 0:
                 button1.setText("Удалить из друзей");
+                button1.setVisibility(getView().INVISIBLE);
                 button2.setText("Создать диалог");
                 button3.setText("Защищенный диалог");
                 break;
@@ -100,10 +101,12 @@ public class fragment_profile extends Fragment {
                 case R.id.button1:
                     if (button1.getText().equals("Добавить в друзья")) {
                         AuthTask at = new AuthTask();
+                        idReq=1;
                         at.execute("add", authReq.getToken(), Integer.toString(frProfile.Id));
                     } else {
                         if (button1.getText().equals("Принять заявку")) {
                             AuthTask at = new AuthTask();
+                            idReq=4;
                             at.execute("add", authReq.getToken(),Integer.toString(frProfile.Id));
                         } else {
                             if (button1.getText().equals("Удалить из друзей")) {
@@ -207,6 +210,20 @@ public class fragment_profile extends Fragment {
                             toastPass.show();
                         }
                         break;
+                    case 4:
+                        addFriendRequest.responseHandler(ret);
+                        if (addFriendRequest.getResponse().equals("OK")) {
+                            Activity_Navigation.fragmentManager.beginTransaction().replace(R.id.main_content, new fragments_navigation_item_friends()).commit();
+                            Activity_Navigation.toolbar.setTitle("Друзья");
+                            Toast toastPass = Toast.makeText(getActivity(), "Запрос подтвержден", Toast.LENGTH_LONG);
+                            toastPass.setGravity(Gravity.CENTER, 0, -90);
+                            toastPass.show();
+                        } else {
+                            Toast toastPass = Toast.makeText(getActivity(), ret.toString(), Toast.LENGTH_LONG);
+                            toastPass.setGravity(Gravity.CENTER, 0, -90);
+                            toastPass.show();
+                        }
+                        break;
 
                 }
 
@@ -219,7 +236,6 @@ public class fragment_profile extends Fragment {
         protected String doInBackground(String... data) {
             try {
                 if (data[0].equals("add")) {
-                    idReq = 1;
                     addFriendRequest = new addFriendRequest();
                     addFriendRequest.createRequest(data[1], data[2]);
                     InetAddress serverAddr = InetAddress.getByName(serverInfo.getIP());
